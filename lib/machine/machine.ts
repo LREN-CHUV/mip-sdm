@@ -15,6 +15,7 @@
  */
 
 import {
+    GitHubRepoRef,
     SoftwareDeliveryMachine,
     SoftwareDeliveryMachineConfiguration,
 } from "@atomist/sdm";
@@ -22,14 +23,30 @@ import {
     createSoftwareDeliveryMachine,
     summarizeGoalsInGitHubStatus,
 } from "@atomist/sdm-core";
+import {
+    MetaDbSetupProjectCreationParameterDefinitions,
+    MetaDbSetupProjectCreationParameters,
+} from "../mip/meta/generate/MetaDbSetupProjectCreationParameters";
+import { TransformSeedToCustomProject } from "../mip/meta/generate/TransformSeedToCustomProject";
 
 export function machine(
     configuration: SoftwareDeliveryMachineConfiguration,
 ): SoftwareDeliveryMachine {
 
     const sdm = createSoftwareDeliveryMachine({
-        name: "Blank Seed Software Delivery Machine",
+        name: "MIP Software Delivery Machine",
         configuration,
+    });
+
+    sdm.addGeneratorCommand<MetaDbSetupProjectCreationParameters>({
+        name: "create-mip-meta-db-setup",
+        intent: "create MIP meta db setup",
+        description: "Create a new database setup project for metadata based on MIP CDEs",
+        parameters: MetaDbSetupProjectCreationParameterDefinitions,
+        startingPoint: new GitHubRepoRef("lren-chuv", "mip-meta-db-setup-seed"),
+        transform: [
+            TransformSeedToCustomProject,
+        ],
     });
 
     summarizeGoalsInGitHubStatus(sdm);
