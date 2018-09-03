@@ -32,6 +32,9 @@
         "node_modules",
         ".#*"
     ],
+    "paths": {
+        "@app/*": ["src/*"]
+    },
     "compileOnSave": true,
     "buildOnSave": false,
     "atom": {

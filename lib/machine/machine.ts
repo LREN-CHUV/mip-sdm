@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
+import { GitHubRepoRef, SoftwareDeliveryMachine, SoftwareDeliveryMachineConfiguration } from "@atomist/sdm";
+import { createSoftwareDeliveryMachine, summarizeGoalsInGitHubStatus } from "@atomist/sdm-core";
 import {
-    GitHubRepoRef,
-    SoftwareDeliveryMachine,
-    SoftwareDeliveryMachineConfiguration,
-} from "@atomist/sdm";
-import {
-    createSoftwareDeliveryMachine,
-    summarizeGoalsInGitHubStatus,
-} from "@atomist/sdm-core";
-import {
-    MetaDbSetupProjectCreationParameterDefinitions,
-    MetaDbSetupProjectCreationParameters,
+    MetaDbSetupProjectCreationParameterDefinitions, MetaDbSetupProjectCreationParameters,
 } from "../mip/meta/generate/MetaDbSetupProjectCreationParameters";
 import { TransformSeedToCustomProject } from "../mip/meta/generate/TransformSeedToCustomProject";
 
