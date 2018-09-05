@@ -31,7 +31,7 @@ export function machine(
     });
 
     sdm.addGeneratorCommand<MetaDbSetupProjectCreationParameters>({
-        name: "create-meta-db-setup",
+        name: "CreateMetaDbSetup",
         intent: "create meta db setup",
         description: "Create a new database setup project for variable metadata",
         parameters: MetaDbSetupProjectCreationParameterDefinitions,

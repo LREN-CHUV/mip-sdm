@@ -23,11 +23,11 @@ function renameDataset(
   datasetLabel: string,
   project: Project,
 ): Promise<Project> {
-  return doWithFiles(project, "**/*.*,Dockerfile", file =>
-    file
+  return doWithFiles(project, "**/*.*", async file => {
+    await file
       .replaceAll("DATASET_LABEL", datasetLabel)
-      .then(f => f.replaceAll("DATASET", datasetCode)),
-  );
+      .then(f => f.replaceAll("DATASET", datasetCode));
+  });
 }
 
 function mipCdeOrGeneric(
@@ -39,11 +39,11 @@ function mipCdeOrGeneric(
       if (derivedFromMipCde) {
         await f.rename("Dockerfile");
       } else {
-        project.deleteFile(f.name);
+        await project.deleteFile(f.name);
       }
     } else if (f.name.endsWith(".generic")) {
       if (derivedFromMipCde) {
-        project.deleteFile(f.name);
+        await project.deleteFile(f.name);
       } else {
         await f.rename("Dockerfile");
       }
