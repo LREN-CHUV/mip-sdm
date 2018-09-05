@@ -18,6 +18,11 @@ export interface MetaDbSetupProjectCreationParameters
    * Label of the dataset.
    */
   datasetLabel: string;
+
+  /**
+   * True if the dataset variables are derived from MIP CDEs.
+   */
+  derivedFromMipCde: string;
 }
 
 /**
@@ -27,15 +32,24 @@ export interface MetaDbSetupProjectCreationParameters
 export const MetaDbSetupProjectCreationParameterDefinitions: ParametersObject = {
   datasetCode: {
     displayName: "Dataset code",
-    description: "code for the dataset",
+    description: "Code for the dataset",
     ...DatasetIdentifierRegExp,
     required: true,
+    order: 50,
   },
 
   datasetLabel: {
     displayName: "Dataset label",
-    description: "label for the dataset",
+    description: "Label for the dataset",
     ...DatasetLabelRegExp,
     required: true,
+    order: 51,
+  },
+
+  derivedFromMipCde: {
+    displayName: "Variables derived from MIP CDEs",
+    description: "yes if dataset variables are derived from MIP CDEs, no if the list of variables is generic",
+    required: true,
+    order: 52,
   },
 };

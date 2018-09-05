@@ -31,9 +31,9 @@ export function machine(
     });
 
     sdm.addGeneratorCommand<MetaDbSetupProjectCreationParameters>({
-        name: "create-mip-meta-db-setup",
-        intent: "create MIP meta db setup",
-        description: "Create a new database setup project for metadata based on MIP CDEs",
+        name: "create-meta-db-setup",
+        intent: "create meta db setup",
+        description: "Create a new database setup project for variable metadata",
         parameters: MetaDbSetupProjectCreationParameterDefinitions,
         startingPoint: new GitHubRepoRef("lren-chuv", "mip-meta-db-setup-seed"),
         transform: [
