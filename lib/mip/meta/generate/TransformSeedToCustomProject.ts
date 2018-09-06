@@ -48,5 +48,11 @@ function mipCdeOrGeneric(
         await f.rename("Dockerfile");
       }
     }
-  });
+  }).then((p) =>
+    doWithFiles(p, "mip*.*", async f => {
+      if (!derivedFromMipCde) {
+        await project.deleteFile(f.name);
+      }
+    })
+  );
 }
