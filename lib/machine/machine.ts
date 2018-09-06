@@ -33,7 +33,7 @@ export function machine(
     sdm.addGeneratorCommand<MetaDbSetupProjectCreationParameters>({
         name: "CreateMetaDbSetup",
         intent: "create meta db setup",
-        description: "Create a new database setup project for variable metadata",
+        description: "Create a new database setup project for the metadata describing the list of variables and their taxonomy",
         parameters: MetaDbSetupProjectCreationParameterDefinitions,
         startingPoint: new GitHubRepoRef("lren-chuv", "mip-meta-db-setup-seed"),
         transform: [

@@ -45,26 +45,26 @@ subjects:
 kind: Deployment
 apiVersion: extensions/v1beta1
 metadata:
-  name: blank-sdm
+  name: mip-sdm
   namespace: sdm
   labels:
-    app: blank-sdm
+    app: mip-sdm
 spec:
   replicas: 1
   revisionHistoryLimit: 3
   selector:
     matchLabels:
-      app: blank-sdm
+      app: mip-sdm
   template:
     metadata:
       labels:
-        app: blank-sdm
+        app: mip-sdm
         version: "0"
     spec:
       serviceAccountName: sdm-serviceaccount
       containers:
-      - name: blank-sdm
-        image: atomist/blank-sdm:0.1.0
+      - name: mip-sdm
+        image: atomist/mip-sdm:0.1.0
         imagePullPolicy: IfNotPresent
         env:
         - name: ATOMIST_DEPLOYMENT_NAME

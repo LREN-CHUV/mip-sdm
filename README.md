@@ -1,16 +1,34 @@
-# @atomist/blank-sdm
+[![CHUV](https://img.shields.io/badge/CHUV-LREN-AF4C64.svg)](https://www.unil.ch/lren/en/home.html) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://github.com/LREN-CHUV/mip-sdm/blob/master/LICENSE)
+
+
+# MIP Software Delivery Machine powered by [Atomist][atomist]
 
 [![atomist sdm goals](http://badge.atomist.com/T29E48P34/atomist/blank-sdm-seed/0aaf5b12-ff68-4e22-bcf6-9b84c49dae19)](https://app.atomist.com/workspace/T29E48P34)
 [![npm version](https://img.shields.io/npm/v/@atomist/blank-sdm.svg)](https://www.npmjs.com/package/@atomist/blank-sdm)
 
-The simplest possible [Atomist][atomist] software delivery machine
-(SDM).
+[Atomist][atomist] software delivery machine (SDM) customised for HBP Medical team.
 
 See the [Atomist documentation][atomist-doc] for more information on
 what SDMs are and what they can do for you using the Atomist API for
 software.
 
 [atomist-doc]: https://docs.atomist.com/ (Atomist Documentation)
+
+## Functions provided
+
+### Code generation for new projects
+
+#### atomist create meta db setup
+
+Creates a new database setup project that will insert into a database the metadata describing the list of variables and their taxonomy.
+
+The project will use [Flyway Database migrations](flywaydb) to create the tables and insert data in the target database.
+
+#### atomist create data db setup
+
+Creates a new database setup project for the features of a dataset stored into a database table.
+
+The project will use [Flyway Database migrations](flywaydb) to create the tables and insert data in the target database.
 
 ## Prerequisites
 
@@ -91,3 +109,4 @@ Need Help?  [Join our Slack workspace][slack].
 
 [atomist]: https://atomist.com/ (Atomist - How Teams Deliver Software)
 [slack]: https://join.atomist.com/ (Atomist Community Slack)
+[flywaydb]: https://flywaydb.org/ (Flyway Database migrations)
