@@ -20,6 +20,7 @@ import {
     MetaDbSetupProjectCreationParameterDefinitions, MetaDbSetupProjectCreationParameters,
 } from "../mip/meta/generate/MetaDbSetupProjectCreationParameters";
 import { TransformSeedToCustomProject } from "../mip/meta/generate/TransformSeedToCustomProject";
+import { SlocSupport } from "@atomist/sdm-pack-sloc";
 
 export function machine(
     configuration: SoftwareDeliveryMachineConfiguration,
@@ -40,6 +41,8 @@ export function machine(
             TransformSeedToCustomProject,
         ],
     });
+
+    sdm.addExtensionPacks(SlocSupport);
 
     summarizeGoalsInGitHubStatus(sdm);
 
