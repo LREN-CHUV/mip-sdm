@@ -19,7 +19,11 @@ import { createSoftwareDeliveryMachine, summarizeGoalsInGitHubStatus } from "@at
 import {
     MetaDbSetupProjectCreationParameterDefinitions, MetaDbSetupProjectCreationParameters,
 } from "../mip/meta/generate/MetaDbSetupProjectCreationParameters";
-import { TransformSeedToCustomProject } from "../mip/meta/generate/TransformSeedToCustomProject";
+import { TransformMetaSeedToCustomProject } from "../mip/meta/generate/TransformMetaSeedToCustomProject";
+import {
+    DataDbSetupProjectCreationParameterDefinitions, DataDbSetupProjectCreationParameters,
+} from "../mip/data/generate/DataDbSetupProjectCreationParameters";
+import { TransformDataSeedToCustomProject } from "../mip/data/generate/TransformDataSeedToCustomProject";
 import { SlocSupport } from "@atomist/sdm-pack-sloc";
 
 export function machine(
@@ -34,11 +38,22 @@ export function machine(
     sdm.addGeneratorCommand<MetaDbSetupProjectCreationParameters>({
         name: "CreateMetaDbSetup",
         intent: "create meta db setup",
-        description: "Create a new database setup project for the metadata describing the list of variables and their taxonomy",
+        description: "Create a new database setup project that will insert into a database the metadata describing the list of variables and their taxonomy",
         parameters: MetaDbSetupProjectCreationParameterDefinitions,
         startingPoint: new GitHubRepoRef("lren-chuv", "mip-meta-db-setup-seed"),
         transform: [
-            TransformSeedToCustomProject,
+            TransformMetaSeedToCustomProject,
+        ],
+    });
+
+    sdm.addGeneratorCommand<DataDbSetupProjectCreationParameters>({
+        name: "CreateDataDbSetup",
+        intent: "create data db setup",
+        description: "Create a new database setup project that will insert into a database the features of a dataset",
+        parameters: DataDbSetupProjectCreationParameterDefinitions,
+        startingPoint: new GitHubRepoRef("lren-chuv", "mip-data-db-setup-seed"),
+        transform: [
+            TransformDataSeedToCustomProject,
         ],
     });
 

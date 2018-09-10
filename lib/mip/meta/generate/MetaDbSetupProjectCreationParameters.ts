@@ -5,7 +5,7 @@ import { ParametersObject } from "@atomist/sdm";
 import { DatasetIdentifierRegExp, DatasetLabelRegExp } from "../metaPatterns";
 
 /**
- * Parameter interface for Spring Boot project creation
+ * Parameter interface for Meta db setup project creation
  */
 export interface MetaDbSetupProjectCreationParameters
   extends SeedDrivenGeneratorParameters {
@@ -26,8 +26,7 @@ export interface MetaDbSetupProjectCreationParameters
 }
 
 /**
- * Parameters for creating Spring Boot apps.
- * Based on Java project creation parameters.
+ * Parameters for creating Meta db setup projects.
  */
 export const MetaDbSetupProjectCreationParameterDefinitions: ParametersObject = {
   datasetCode: {

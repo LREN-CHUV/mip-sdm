@@ -26,7 +26,7 @@ The project will use [Flyway Database migrations](flywaydb) to create the tables
 
 #### atomist create data db setup
 
-Creates a new database setup project for the features of a dataset stored into a database table.
+Creates a new database setup project that will insert into a database the features of a dataset.
 
 The project will use [Flyway Database migrations](flywaydb) to create the tables and insert data in the target database.
 
