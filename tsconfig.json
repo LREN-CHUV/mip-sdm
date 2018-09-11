@@ -28,6 +28,7 @@
         "assets",
         "build",
         "doc",
+        "dist",
         "legal",
         "log",
         "node_modules",

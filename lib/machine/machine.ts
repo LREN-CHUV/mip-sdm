@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { GitHubRepoRef, SoftwareDeliveryMachine, SoftwareDeliveryMachineConfiguration } from "@atomist/sdm";
+import {
+    AutoCodeInspection, Autofix, GitHubRepoRef, PushImpact, SoftwareDeliveryMachine, SoftwareDeliveryMachineConfiguration, goals, goalContributors, onAnyPush
+} from "@atomist/sdm";
 import { createSoftwareDeliveryMachine, summarizeGoalsInGitHubStatus } from "@atomist/sdm-core";
 import {
     MetaDbSetupProjectCreationParameterDefinitions, MetaDbSetupProjectCreationParameters,
@@ -25,6 +27,7 @@ import {
 } from "../mip/data/generate/DataDbSetupProjectCreationParameters";
 import { TransformDataSeedToCustomProject } from "../mip/data/generate/TransformDataSeedToCustomProject";
 import { SlocSupport } from "@atomist/sdm-pack-sloc";
+import { AddCircleCiToAtomistWebhookAutofix } from "../autofix/addCircleCiToAtomistWebhook";
 
 export function machine(
     configuration: SoftwareDeliveryMachineConfiguration,
@@ -34,6 +37,22 @@ export function machine(
         name: "MIP Software Delivery Machine",
         configuration,
     });
+
+    const AutofixGoal = new Autofix().with(AddCircleCiToAtomistWebhookAutofix);
+
+    const BaseGoals = goals("checks")
+        .plan(new AutoCodeInspection())
+        .plan(new PushImpact())
+        .plan(AutofixGoal);
+
+    //const BuildGoals = goals("build")
+    //    .plan(new Build().with({ name: "Maven", builder: new MavenBuilder(sdm) }))
+    //    .after(AutofixGoal);
+
+    sdm.addGoalContributions(goalContributors(
+        onAnyPush().setGoals(BaseGoals),
+        //whenPushSatisfies(anySatisfied(IsMaven)).setGoals(BuildGoals),
+    ));
 
     sdm.addGeneratorCommand<MetaDbSetupProjectCreationParameters>({
         name: "CreateMetaDbSetup",
