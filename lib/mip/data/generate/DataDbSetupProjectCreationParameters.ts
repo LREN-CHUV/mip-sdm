@@ -35,10 +35,10 @@ export const DataDbSetupProjectCreationParameterDefinitions: ParametersObject = 
   },
 
   dataLicense: {
-    displayName: "License for data: cc-by-sa-4, cc-by-nc-sa-4, on-demand-access, private",
-    description: "Defines the License for data: cc-by-sa-4 (open access), cc-by-nc-sa-4 (open access non commercial), on-demand-access, private",
+    displayName: "License for data: cc-by-sa, cc-by-nc-sa, on-demand-access, private",
+    description: "Defines the License for data: cc-by-sa (open access), cc-by-nc-sa (open access non commercial), on-demand-access, private",
     required: true,
-    pattern: /(cc-by-sa-4|cc-by-nc-sa-4|on-demand-access|private)/,
+    pattern: /(cc-by-sa|cc-by-nc-sa|on-demand-access|private)/,
     order: 61,
   },
 

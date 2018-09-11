@@ -48,6 +48,7 @@ export const MetaDbSetupProjectCreationParameterDefinitions: ParametersObject = 
   derivedFromMipCde: {
     displayName: "Variables derived from MIP CDEs",
     description: "yes if dataset variables are derived from MIP CDEs, no if the list of variables is generic",
+    pattern: /(yes|no)/,
     required: true,
     order: 52,
   },
