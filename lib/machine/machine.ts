@@ -29,6 +29,7 @@ import {
   createSoftwareDeliveryMachine,
   summarizeGoalsInGitHubStatus,
 } from "@atomist/sdm-core";
+import { buildAwareCodeTransforms } from "@atomist/sdm/pack/build-aware-transform";
 import { SlocSupport } from "@atomist/sdm-pack-sloc";
 import {
   DataDbSetupProjectCreationParameterDefinitions,
@@ -109,7 +110,10 @@ export function machine(
   sdm.addCodeTransformCommand(AddAtomistWebhookToCircleCiRegistration);
   sdm.addCodeTransformCommand(UpgradeDataDbSetupRegistration);
 
-  sdm.addExtensionPacks(SlocSupport);
+  sdm.addExtensionPacks(
+    buildAwareCodeTransforms({ issueRouter: { raiseIssue: async () => { /* intentionally left empty */ }}}),
+    SlocSupport
+  );
 
   summarizeGoalsInGitHubStatus(sdm);
 
