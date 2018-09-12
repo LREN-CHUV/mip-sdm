@@ -30,6 +30,12 @@ Creates a new database setup project that will insert into a database the featur
 
 The project will use [Flyway Database migrations](flywaydb) to create the tables and insert data in the target database.
 
+### Upgrades for existing projects
+
+#### atomist upgrade data db setup
+
+Upgrade a project derived from data db setup, and upgrade it to the latest version of data-db-setup or mip-cde-data-db-setup
+
 ## Prerequisites
 
 See the [Atomist Developer documentation][atomist-dev] for

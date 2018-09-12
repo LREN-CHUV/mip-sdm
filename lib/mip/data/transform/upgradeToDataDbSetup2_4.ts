@@ -39,6 +39,7 @@ function removeDeprecatedBuildStages(text: string): string {
       l.indexOf("as parent-image") < 0
     );
   });
+  let fromBuildJava = lines.findIndex(l => l.indexOf("COPY --from=build-java-env") >= 0);
 
   if (start > 0) {
     if (lines[start - 1].startsWith("#")) {
@@ -52,8 +53,17 @@ function removeDeprecatedBuildStages(text: string): string {
     }
   }
 
+  if (fromBuildJava >= 0) {
+      lines[fromBuildJava] = "COPY config/ /flyway/config/";
+  }
+
   if (start > 0 && end > start) {
     lines.splice(start, end - start)
-    return lines.join("\n");
-  } else { return text; }
+  }
+
+  lines.forEach( l => {
+      l.replace(/hbpmip\/data-db-setup:\d:\d:\d/, "hbpmip/data-db-setup:2.4.0");
+  });
+
+  return lines.join("\n");
 }
