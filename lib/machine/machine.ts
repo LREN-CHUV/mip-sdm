@@ -30,7 +30,6 @@ import {
   summarizeGoalsInGitHubStatus,
 } from "@atomist/sdm-core";
 import { SlocSupport } from "@atomist/sdm-pack-sloc";
-import { AddAtomistWebhookToCircleCiTransform, AddAtomistWebhookToCircleCiregistration, } from "../transform/addCircleCiToAtomistWebhook";
 import {
   DataDbSetupProjectCreationParameterDefinitions,
   DataDbSetupProjectCreationParameters
@@ -38,9 +37,14 @@ import {
 import { TransformDataSeedToCustomProject } from "../mip/data/generate/TransformDataSeedToCustomProject";
 import {
   MetaDbSetupProjectCreationParameterDefinitions,
-  MetaDbSetupProjectCreationParameters,
+  MetaDbSetupProjectCreationParameters
 } from "../mip/meta/generate/MetaDbSetupProjectCreationParameters";
 import { TransformMetaSeedToCustomProject } from "../mip/meta/generate/TransformMetaSeedToCustomProject";
+import {
+  AddAtomistWebhookToCircleCiRegistration,
+  AddAtomistWebhookToCircleCiTransform
+} from "../transform/addCircleCiToAtomistWebhook";
+import { UpgradeDataDbSetupRegistration } from "../mip/data/transform/upgradeToDataDbSetup2_4";
 
 export function machine(
   configuration: SoftwareDeliveryMachineConfiguration,
@@ -61,7 +65,10 @@ export function machine(
   });
 
   // Enable autofixes
-  const AutofixGoal = new Autofix().with({ name: "", transform: AddAtomistWebhookToCircleCiTransform });
+  const AutofixGoal = new Autofix().with({
+    name: "AddAtomistWebhookToCircleCiFix",
+    transform: AddAtomistWebhookToCircleCiTransform,
+  });
 
   const BaseGoals = goals("checks")
     .plan(new AutoCodeInspection())
@@ -99,7 +106,8 @@ export function machine(
     transform: [TransformDataSeedToCustomProject],
   });
 
-  sdm.addCodeTransformCommand(AddAtomistWebhookToCircleCiregistration);
+  sdm.addCodeTransformCommand(AddAtomistWebhookToCircleCiRegistration);
+  sdm.addCodeTransformCommand(UpgradeDataDbSetupRegistration);
 
   sdm.addExtensionPacks(SlocSupport);
 

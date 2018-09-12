@@ -19,8 +19,9 @@ export const AddAtomistWebhookToCircleCiTransform: CodeTransform = async p => {
     });
 };
 
-export const AddAtomistWebhookToCircleCiregistration: CodeTransformRegistration = {
-  name: "Notify Atomist on CircleCi builds",
+export const AddAtomistWebhookToCircleCiRegistration: CodeTransformRegistration = {
+  name: "AddAtomistWebhookToCircleCi",
+  description: "Notify Atomist on CircleCi builds",
   intent: "notify Atomist on CircleCi builds",
   transform: AddAtomistWebhookToCircleCiTransform
 };
