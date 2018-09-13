@@ -45,6 +45,7 @@ import {
 } from "../transform/addCircleCiToAtomistWebhook";
 import { BuildGoals, BaseGoals, registerBuilder } from "./goals";
 import { HasCaptainBuildScriptFile } from "../mip/project-scripts/pushTests";
+import { CaptainLogInterpreter } from "../mip/project-scripts/build/buildLogInterpreter";
 
 export function machine(
   configuration: SoftwareDeliveryMachineConfiguration,
@@ -62,7 +63,9 @@ export function machine(
 
   registerBuilder({
     name: "Build script",
+    pushTest: HasCaptainBuildScriptFile,
     builder: new ProjectBuilder(sdm),
+    logInterpreter: CaptainLogInterpreter,
   }),
 
   sdm.addGeneratorCommand<MetaDbSetupProjectCreationParameters>({

@@ -14,7 +14,7 @@ import { CaptainBuildScriptFix } from "../mip/project-scripts/autofix/captainBui
     .plan(new PushImpact())
     .plan(AutofixGoal);
 
-  export const BuildGoal: Build = new Build();
+  export const BuildGoal = new Build();
   export const BuildGoals = goals("build")
     .plan(BuildGoal)
     .after(AutofixGoal);

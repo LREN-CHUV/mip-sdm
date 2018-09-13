@@ -1,4 +1,4 @@
-import { CodeTransform, doWithFiles, CodeTransformRegistration } from "@atomist/sdm";
+import { CodeTransform, doWithFiles, CodeTransformRegistration, EditMode } from "@atomist/sdm";
 
 export const UpgradeToDataDbSetup2_4Transform: CodeTransform = async project => {
   doWithFiles(
@@ -18,11 +18,24 @@ export const UpgradeToDataDbSetup2_4Transform: CodeTransform = async project => 
 };
 
 export const UpgradeDataDbSetupRegistration: CodeTransformRegistration = {
-    name: "UpgradeDataDbSetup",
-    description: "Upgrade data db setup in this project",
-    intent: "upgrade data db setup",
-    transform: UpgradeToDataDbSetup2_4Transform
-  };
+  name: "UpgradeDataDbSetup",
+  description: "Upgrade data db setup",
+  intent: "upgrade data db setup",
+  transform: UpgradeToDataDbSetup2_4Transform,
+  transformPresentation: ci => {
+    return new MasterCommit();
+  },
+};
+class MasterCommit implements EditMode {
+
+  get message(): string {
+    return "Upgrade data db setup to version 2.4";
+  }
+
+  get branch(): string {
+    return "master";
+  }
+}
 
 function removeDeprecatedBuildStages(text: string): string {
   const lines = text.split("\n");
@@ -54,15 +67,15 @@ function removeDeprecatedBuildStages(text: string): string {
   }
 
   if (fromBuildJava >= 0) {
-      lines[fromBuildJava] = "COPY config/ /flyway/config/";
+    lines[fromBuildJava] = "COPY config/ /flyway/config/";
   }
 
   if (start > 0 && end > start) {
     lines.splice(start, end - start)
   }
 
-  lines.forEach( l => {
-      l.replace(/hbpmip\/data-db-setup:\d\.\d\.\d/, "hbpmip/data-db-setup:2.4.0");
+  lines.forEach(l => {
+    l.replace(/hbpmip\/data-db-setup:\d\.\d\.\d/, "hbpmip/data-db-setup:2.4.0");
   });
 
   return lines.join("\n");
