@@ -1,6 +1,7 @@
 import { File } from "@atomist/automation-client/project/File";
-import { CodeTransformRegistration, CodeTransform } from "@atomist/sdm";
-export const CircleCIConfigFile = "./circleci/config.yml";
+import { CodeTransformRegistration, CodeTransform, AutofixRegistration } from "@atomist/sdm";
+
+export const CircleCIConfigFile = ".circleci/config.yml";
 
 const ATOMIST_NOTIFY = `
 
@@ -25,3 +26,8 @@ export const AddAtomistWebhookToCircleCiRegistration: CodeTransformRegistration 
   intent: "notify Atomist on CircleCi builds",
   transform: AddAtomistWebhookToCircleCiTransform
 };
+
+export const AddAtomistWebhookToCircleCiFix: AutofixRegistration = {
+  name: "AddAtomistWebhookToCircleCiFix",
+  transform: AddAtomistWebhookToCircleCiTransform,
+}

@@ -15,45 +15,55 @@
  */
 
 import {
-  AutoCodeInspection,
-  Autofix,
   GitHubRepoRef,
   goalContributors,
-  goals,
   onAnyPush,
-  PushImpact,
   SoftwareDeliveryMachine,
   SoftwareDeliveryMachineConfiguration,
+  whenPushSatisfies,
 } from "@atomist/sdm";
 import {
   createSoftwareDeliveryMachine,
   summarizeGoalsInGitHubStatus,
 } from "@atomist/sdm-core";
-import { buildAwareCodeTransforms } from "@atomist/sdm/pack/build-aware-transform";
 import { SlocSupport } from "@atomist/sdm-pack-sloc";
+import { buildAwareCodeTransforms } from "@atomist/sdm/pack/build-aware-transform";
 import {
   DataDbSetupProjectCreationParameterDefinitions,
-  DataDbSetupProjectCreationParameters
+  DataDbSetupProjectCreationParameters,
 } from "../mip/data/generate/DataDbSetupProjectCreationParameters";
 import { TransformDataSeedToCustomProject } from "../mip/data/generate/TransformDataSeedToCustomProject";
+import { UpgradeDataDbSetupRegistration } from "../mip/data/transform/upgradeToDataDbSetup2_4";
 import {
   MetaDbSetupProjectCreationParameterDefinitions,
   MetaDbSetupProjectCreationParameters
 } from "../mip/meta/generate/MetaDbSetupProjectCreationParameters";
 import { TransformMetaSeedToCustomProject } from "../mip/meta/generate/TransformMetaSeedToCustomProject";
+import { ProjectBuilder } from "../mip/project-scripts/build/ProjectBuilder";
 import {
-  AddAtomistWebhookToCircleCiRegistration,
-  AddAtomistWebhookToCircleCiTransform
+  AddAtomistWebhookToCircleCiRegistration
 } from "../transform/addCircleCiToAtomistWebhook";
-import { UpgradeDataDbSetupRegistration } from "../mip/data/transform/upgradeToDataDbSetup2_4";
+import { BuildGoals, BaseGoals, registerBuilder } from "./goals";
+import { HasCaptainBuildScriptFile } from "../mip/project-scripts/pushTests";
 
 export function machine(
   configuration: SoftwareDeliveryMachineConfiguration,
 ): SoftwareDeliveryMachine {
-  const sdm = createSoftwareDeliveryMachine({
-    name: "MIP Software Delivery Machine",
-    configuration,
-  });
+
+  const sdm = createSoftwareDeliveryMachine(
+    {
+      name: "MIP Software Delivery Machine",
+      configuration,
+    },
+    whenPushSatisfies(HasCaptainBuildScriptFile)
+      .itMeans("Build")
+      .setGoals(BuildGoals),
+  );
+
+  registerBuilder({
+    name: "Build script",
+    builder: new ProjectBuilder(sdm),
+  }),
 
   sdm.addGeneratorCommand<MetaDbSetupProjectCreationParameters>({
     name: "CreateMetaDbSetup",
@@ -64,21 +74,6 @@ export function machine(
     startingPoint: new GitHubRepoRef("lren-chuv", "mip-meta-db-setup-seed"),
     transform: [TransformMetaSeedToCustomProject],
   });
-
-  // Enable autofixes
-  const AutofixGoal = new Autofix().with({
-    name: "AddAtomistWebhookToCircleCiFix",
-    transform: AddAtomistWebhookToCircleCiTransform,
-  });
-
-  const BaseGoals = goals("checks")
-    .plan(new AutoCodeInspection())
-    .plan(new PushImpact())
-    .plan(AutofixGoal);
-
-  // const BuildGoals = goals("build")
-  //    .plan(new Build().with({ name: "Maven", builder: new MavenBuilder(sdm) }))
-  //    .after(AutofixGoal);
 
   sdm.addGoalContributions(
     goalContributors(
@@ -111,8 +106,14 @@ export function machine(
   sdm.addCodeTransformCommand(UpgradeDataDbSetupRegistration);
 
   sdm.addExtensionPacks(
-    buildAwareCodeTransforms({ issueRouter: { raiseIssue: async () => { /* intentionally left empty */ }}}),
-    SlocSupport
+    buildAwareCodeTransforms({
+      issueRouter: {
+        raiseIssue: async () => {
+          /* intentionally left empty */
+        },
+      },
+    }),
+    SlocSupport,
   );
 
   summarizeGoalsInGitHubStatus(sdm);
