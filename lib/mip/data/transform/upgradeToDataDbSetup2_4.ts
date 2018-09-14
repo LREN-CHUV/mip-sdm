@@ -75,7 +75,7 @@ function removeDeprecatedBuildStages(text: string): string {
   }
 
   lines.forEach(l => {
-    l.replace(/hbpmip\/data-db-setup:\d\.\d\.\d/, "hbpmip/data-db-setup:2.4.0");
+    l.replace(/hbpmip\/data-db-setup:\\d\\.\\d\.\\d/, "hbpmip/data-db-setup:2.4.0");
   });
 
   return lines.join("\n");
