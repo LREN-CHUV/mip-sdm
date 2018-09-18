@@ -98,7 +98,8 @@ function removeDeprecatedBuildStages(text: string): string {
         return updater.newContent();
       } else { return l; }
       */
-      return l.replace(/hbpmip\/data-db-setup:\d\.\d\.\d/, "hbpmip/data-db-setup:2.4.0");
+      return l.replace(/hbpmip\/data-db-setup:\d\.\d\.\d/, "hbpmip/data-db-setup:2.4.0")
+        .replace(/hbpmip\/mip-cde-data-db-setup:\d\.\d\.\d/, "hbpmip/mip-cde-data-db-setup:1.3.0");
     })
     .join("\n");
 }
