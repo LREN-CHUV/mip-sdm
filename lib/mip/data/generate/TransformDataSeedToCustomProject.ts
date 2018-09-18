@@ -34,7 +34,7 @@ function renameDataset(
       .replaceAll("CUSTOM_LABEL", datasetLabel)
       .then(f => f.replaceAll("CUSTOM", datasetCode))
       .then(f => {
-        if (f.name.indexOf("CUSTOM") >= 0) {
+        if (f.path.indexOf("CUSTOM") >= 0) {
           f.rename(f.name.replace("CUSTOM", datasetCode));
         }
       });
@@ -47,16 +47,54 @@ function mipCdeOrGeneric(
 ): Promise<Project> {
   return doWithFiles(project, "**/generic_*.*", async f => {
     if (derivedFromMipCde) {
-      await project.deleteFile(f.name);
-    } else if (f.name.indexOf("CUSTOM") >= 0) {
+      return project.deleteFile(f.path);
+    } else {
       await f.rename(f.name.replace("generic_", ""));
+      return project;
     }
   }).then(p =>
     doWithFiles(p, "**/mip_*.*", async f => {
       if (derivedFromMipCde) {
         await f.rename(f.name.replace("mip_", ""));
+        return project;
       } else {
-        await project.deleteFile(f.name);
+        return project.deleteFile(f.path);
+      }
+    }),
+  ).then(p =>
+    doWithFiles(p, "generic_*", async f => {
+      if (derivedFromMipCde) {
+        return project.deleteFile(f.path);
+      } else {
+        await f.rename(f.name.replace("generic_", ""));
+        return project;
+      }
+    }),
+  ).then(p =>
+    doWithFiles(p, "mip_*", async f => {
+      if (derivedFromMipCde) {
+        await f.rename(f.name.replace("mip_", ""));
+        return project;
+      } else {
+        return project.deleteFile(f.path);
+      }
+    }),
+  ).then(p =>
+    doWithFiles(p, "**/generic_*/*", async f => {
+      if (derivedFromMipCde) {
+        return project.deleteFile(f.path);
+      } else {
+        await f.rename(f.name.replace("generic_", ""));
+        return project;
+      }
+    }),
+  ).then(p =>
+    doWithFiles(p, "**/mip_*/*", async f => {
+      if (derivedFromMipCde) {
+        await f.rename(f.name.replace("mip_", ""));
+        return project;
+      } else {
+        return project.deleteFile(f.path);
       }
     }),
   );
@@ -89,15 +127,16 @@ function dockerRepository(
           if (distributionScope == "local") {
             f.rename(f.name.replace("_LOCAL", ""));
           } else {
-            project.deleteFile(f.name);
+            return project.deleteFile(f.path);
           }
         } else if (f.name.indexOf("_REMOTE") >= 0) {
           if (distributionScope == "local") {
-            project.deleteFile(f.name);
+            return project.deleteFile(f.path);
           } else {
             f.rename(f.name.replace("_REMOTE", ""));
           }
         }
+        return project;
       });
   });
 }

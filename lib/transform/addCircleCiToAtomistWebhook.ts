@@ -1,4 +1,4 @@
-import { File } from "@atomist/automation-client";
+import { doWithFiles } from "@atomist/automation-client";
 import { CodeTransformRegistration, CodeTransform, AutofixRegistration } from "@atomist/sdm";
 
 export const CircleCIConfigFile = ".circleci/config.yml";
@@ -11,7 +11,7 @@ notify:
 `;
 
 export const AddAtomistWebhookToCircleCiTransform: CodeTransform = async p => {
-    return p.findFile(CircleCIConfigFile).then(async (file: File) => {
+    return doWithFiles(p, CircleCIConfigFile, async file => {
       const content = await file.getContent();
       if (content.indexOf("webhook.atomist.com") < 0) {
         await file.setContent(content + ATOMIST_NOTIFY);
