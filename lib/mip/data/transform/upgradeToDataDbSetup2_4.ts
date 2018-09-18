@@ -1,12 +1,11 @@
-import { Microgrammar } from "@atomist/microgrammar";
+//import { Microgrammar } from "@atomist/microgrammar";
 import {
   CodeTransform,
   CodeTransformRegistration,
   doWithFiles,
   EditMode,
-  logger
 } from "@atomist/sdm";
-import { fromDockerImageGrammar } from "../../../docker/DockerBuildFile";
+//import { fromDockerImageGrammar } from "../../../docker/DockerBuildFile";
 
 export const UpgradeToDataDbSetup2_4Transform: CodeTransform = async project => {
   doWithFiles(
@@ -85,6 +84,7 @@ function removeDeprecatedBuildStages(text: string): string {
 
   return lines
     .map(l => {
+      /*
       const parentImage = fromDockerImageGrammar.firstMatch(l);
       if (parentImage) {
         const updater = Microgrammar.updatableMatch(parentImage, l);
@@ -97,6 +97,8 @@ function removeDeprecatedBuildStages(text: string): string {
         }
         return updater.newContent();
       } else { return l; }
+      */
+      return l.replace(/hbpmip\/data-db-setup:\d\.\d\.\d/, "hbpmip/data-db-setup:2.4.0");
     })
     .join("\n");
 }
