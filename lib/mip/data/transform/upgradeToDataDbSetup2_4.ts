@@ -58,6 +58,22 @@ function removeDeprecatedBuildStages(text: string): string {
       l.indexOf("as parent-image") < 0
     );
   });
+
+  if (start < 0 && end < 0) {
+    start = lines.findIndex(l => {
+      return (
+        l.indexOf("FROM maven") >= 0 &&
+        l.indexOf("as build-java-env") > 0
+      );
+    });
+    end = lines.findIndex(l => {
+      return (
+        l.indexOf("FROM hbpmip/mip-cde-data-db-setup") >= 0 &&
+        l.indexOf("as parent-image") < 0
+      );
+    });
+    }
+
   const fromBuildJava = lines.findIndex(
     l => l.indexOf("COPY --from=build-java-env") >= 0,
   );
