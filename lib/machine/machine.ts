@@ -26,8 +26,8 @@ import {
   createSoftwareDeliveryMachine,
   summarizeGoalsInGitHubStatus,
 } from "@atomist/sdm-core";
-import { SlocSupport } from "@atomist/sdm-pack-sloc";
-import { buildAwareCodeTransforms } from "@atomist/sdm/pack/build-aware-transform";
+//import { SlocSupport } from "@atomist/sdm-pack-sloc/lib/sloc";
+import { buildAwareCodeTransforms } from "@atomist/sdm/lib/pack/build-aware-transform";
 import {
   DataDbSetupProjectCreationParameterDefinitions,
   DataDbSetupProjectCreationParameters,
@@ -116,7 +116,7 @@ export function machine(
         },
       },
     }),
-    SlocSupport,
+    //SlocSupport,
   );
 
   summarizeGoalsInGitHubStatus(sdm);

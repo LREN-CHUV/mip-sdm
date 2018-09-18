@@ -1,6 +1,4 @@
-import { chainEditors } from "@atomist/automation-client/operations/edit/projectEditorOps";
-import { Project } from "@atomist/automation-client/project/Project";
-import { doWithFiles } from "@atomist/automation-client/project/util/projectUtils";
+import { chainEditors, doWithFiles, Project } from "@atomist/automation-client";
 import { CodeTransform } from "@atomist/sdm";
 import { curry, curry3 } from "@typed/curry";
 import { DataDbSetupProjectCreationParameters } from "./DataDbSetupProjectCreationParameters";

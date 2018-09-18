@@ -1,5 +1,4 @@
-import { Microgrammar } from "@atomist/microgrammar/Microgrammar";
-import { Opt } from "@atomist/microgrammar/Ops";
+import { Microgrammar, Opt } from "@atomist/microgrammar";
 
 const REGISTRY = {
   registry: /[a-z0-9]+(?:[._-][a-z0-9]+)*/,

@@ -1,4 +1,4 @@
-import { ChildProcessResult, spawnAndWatch } from "@atomist/automation-client/util/spawned";
+import { ChildProcessResult, spawnAndWatch } from "@atomist/automation-client";
 import {
   AddressChannels,
   AppInfo,

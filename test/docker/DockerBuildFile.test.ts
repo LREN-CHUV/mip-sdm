@@ -1,4 +1,4 @@
-//import { Microgrammar } from "@atomist/microgrammar/Microgrammar";
+//import { Microgrammar } from "@atomist/microgrammar";
 import * as assert from "power-assert";
 import {
   fromDockerImageGrammar,

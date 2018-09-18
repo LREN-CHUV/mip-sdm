@@ -1,4 +1,4 @@
-import { File } from "@atomist/automation-client/project/File";
+import { File } from "@atomist/automation-client";
 import { CodeTransformRegistration, CodeTransform, AutofixRegistration } from "@atomist/sdm";
 
 export const CircleCIConfigFile = ".circleci/config.yml";

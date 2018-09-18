@@ -1,4 +1,4 @@
-import { BaseParameter } from "@atomist/automation-client/internal/metadata/decoratorSupport";
+import { BaseParameter } from "@atomist/automation-client";
 
 /**
  * Validation pattern for dataset identifiers

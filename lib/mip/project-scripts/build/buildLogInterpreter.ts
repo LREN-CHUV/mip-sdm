@@ -1,6 +1,6 @@
 import { logger } from "@atomist/automation-client";
 import { InterpretLog } from "@atomist/sdm";
-import { Microgrammar } from "@atomist/microgrammar/Microgrammar";
+import { Microgrammar } from "@atomist/microgrammar";
 
 export const CaptainLogInterpreter: InterpretLog<BuildInfo> = log => {
     const data: BuildInfo = {

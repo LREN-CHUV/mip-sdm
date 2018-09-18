@@ -1,6 +1,4 @@
-import {
-    SeedDrivenGeneratorParameters,
-} from "@atomist/automation-client/operations/generate/SeedDrivenGeneratorParameters";
+import { SeedDrivenGeneratorParameters } from "@atomist/automation-client";
 import { ParametersObject } from "@atomist/sdm";
 import { DatasetIdentifierRegExp, DatasetLabelRegExp } from "../metaPatterns";
 
@@ -47,7 +45,8 @@ export const MetaDbSetupProjectCreationParameterDefinitions: ParametersObject = 
 
   derivedFromMipCde: {
     displayName: "Variables derived from MIP CDEs",
-    description: "yes if dataset variables are derived from MIP CDEs, no if the list of variables is generic",
+    description:
+      "yes if dataset variables are derived from MIP CDEs, no if the list of variables is generic",
     pattern: /(yes|no)/,
     required: true,
     order: 52,
