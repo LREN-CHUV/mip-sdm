@@ -1,4 +1,3 @@
 #!/bin/sh
 
-npm run compile
-
+npm run compile && npm test

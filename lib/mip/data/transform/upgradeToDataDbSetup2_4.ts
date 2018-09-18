@@ -1,4 +1,12 @@
-import { CodeTransform, doWithFiles, CodeTransformRegistration, EditMode } from "@atomist/sdm";
+import { Microgrammar } from "@atomist/microgrammar/Microgrammar";
+import {
+  CodeTransform,
+  CodeTransformRegistration,
+  doWithFiles,
+  EditMode,
+  logger
+} from "@atomist/sdm";
+import { fromDockerImageGrammar } from "../../../docker/DockerBuildFile";
 
 export const UpgradeToDataDbSetup2_4Transform: CodeTransform = async project => {
   doWithFiles(
@@ -27,7 +35,6 @@ export const UpgradeDataDbSetupRegistration: CodeTransformRegistration = {
   },
 };
 class MasterCommit implements EditMode {
-
   get message(): string {
     return "Upgrade data db setup to version 2.4";
   }
@@ -52,7 +59,9 @@ function removeDeprecatedBuildStages(text: string): string {
       l.indexOf("as parent-image") < 0
     );
   });
-  let fromBuildJava = lines.findIndex(l => l.indexOf("COPY --from=build-java-env") >= 0);
+  const fromBuildJava = lines.findIndex(
+    l => l.indexOf("COPY --from=build-java-env") >= 0,
+  );
 
   if (start > 0) {
     if (lines[start - 1].startsWith("#")) {
@@ -71,12 +80,23 @@ function removeDeprecatedBuildStages(text: string): string {
   }
 
   if (start > 0 && end > start) {
-    lines.splice(start, end - start)
+    lines.splice(start, end - start);
   }
 
-  lines.forEach(l => {
-    l.replace(/hbpmip\/data-db-setup:\\d\.\\d\.\\d/, "hbpmip/data-db-setup:2.4.0");
-  });
-
-  return lines.join("\n");
+  return lines
+    .map(l => {
+      const parentImage = fromDockerImageGrammar.firstMatch(l);
+      if (parentImage) {
+        const updater = Microgrammar.updatableMatch(parentImage, l);
+        if (
+          parentImage.parentImage.registry == "hbpmip" &&
+          parentImage.parentImage.name == "data-db-setup"
+        ) {
+          logger.info("Update parent image to hbpmip/data-db-setup:2.4.0");
+          updater.parentImage.version = "2.4.0";
+        }
+        return updater.newContent();
+      } else { return l; }
+    })
+    .join("\n");
 }

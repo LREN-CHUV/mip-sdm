@@ -21,14 +21,14 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "dependencies": {
-    "@atomist/automation-client": "1.0.0-M.3",
-    "@atomist/sdm": "1.0.0-M.3",
-    "@atomist/sdm-core": "1.0.0-M.3",
-    "@atomist/sdm-pack-sloc": "^1.0.0-M.3",
+    "@atomist/automation-client": "1.0.0-M.4",
+    "@atomist/sdm": "1.0.0-M.4",
+    "@atomist/sdm-core": "1.0.0-M.4",
+    "@atomist/sdm-pack-sloc": "^1.0.0-M.4",
     "@typed/curry": "^1.0.1"
   },
   "devDependencies": {
-    "@atomist/sdm-local": "1.0.0-M.3",
+    "@atomist/sdm-local": "1.0.0-M.4",
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.9.4",
     "@types/power-assert": "^1.5.0",
