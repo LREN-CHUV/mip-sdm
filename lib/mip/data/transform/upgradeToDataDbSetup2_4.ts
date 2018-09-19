@@ -4,6 +4,7 @@ import {
   CodeTransformRegistration,
   doWithFiles,
   EditMode,
+  logger,
 } from "@atomist/sdm";
 //import { fromDockerImageGrammar } from "../../../docker/DockerBuildFile";
 
@@ -94,8 +95,10 @@ function removeDeprecatedBuildStages(text: string): string {
     lines[fromBuildJava] = "COPY config/ /flyway/config/";
   }
 
-  if (start > 0 && end > start) {
+  if (start >= 0 && end > start) {
     lines.splice(start, end - start);
+  } else {
+    logger.warn(`Cannot find block of lines to remove from Dockerfile. Block start ${start}, end ${end}`);
   }
 
   return lines

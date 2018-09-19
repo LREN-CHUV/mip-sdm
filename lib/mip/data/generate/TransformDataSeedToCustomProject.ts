@@ -104,7 +104,7 @@ function dockerRepository(
   distributionScope: string,
   project: Project,
 ): Promise<Project> {
-  let dockerRepo = "donotdistribute.local";
+  let dockerRepo = "donotdistribute.local/hbpmip_private";
   let dockerRepoLabel = "local Docker image";
   switch (distributionScope) {
     case "public":
