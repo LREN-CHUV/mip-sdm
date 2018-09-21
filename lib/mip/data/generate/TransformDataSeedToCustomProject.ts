@@ -16,11 +16,16 @@ export const TransformDataSeedToCustomProject: CodeTransform<
     params.projectContainsData == "yes",
   );
   return chainEditors(
-    curry3(renameDataset)(params.datasetCode, params.datasetLabel),
+    project => doWithFiles(project, "README.md", async file => {
+      await project.deleteFile(file.path);
+      return project;
+    }),
     curry(mipCdeOrGeneric)(params.derivedFromMipCde.toLowerCase() == "yes"),
+    curry3(renameDataset)(params.datasetCode, params.datasetLabel),
     curry(dockerRepository)(distScope),
     curry(gitRepository)(distScope),
     curry(dataLicense)(params.dataLicense),
+    curry(shipData)(params.projectContainsData == "yes"),
   )(p, ctx.context, params);
 };
 
@@ -35,9 +40,10 @@ function renameDataset(
       .then(f => f.replaceAll("CUSTOM", datasetCode))
       .then(f => {
         if (f.path.indexOf("CUSTOM") >= 0) {
-          f.rename(f.name.replace("CUSTOM", datasetCode));
+          f.setPath(f.path.replace("CUSTOM", datasetCode));
         }
       });
+    project.deleteDirectorySync("tests/sql/CUSTOM");
   });
 }
 
@@ -84,19 +90,27 @@ function mipCdeOrGeneric(
       if (derivedFromMipCde) {
         return project.deleteFile(f.path);
       } else {
-        await f.rename(f.name.replace("generic_", ""));
+        await f.setPath(f.path.replace("generic_", ""));
         return project;
       }
     }),
   ).then(p =>
     doWithFiles(p, "**/mip_*/*", async f => {
       if (derivedFromMipCde) {
-        await f.rename(f.name.replace("mip_", ""));
+        await f.setPath(f.path.replace("mip_", ""));
         return project;
       } else {
         return project.deleteFile(f.path);
       }
     }),
+  ).then(p => {
+      p.deleteDirectorySync("tests/sql/mip_CUSTOM");
+      p.deleteDirectorySync("tests/sql/generic_CUSTOM");
+      if (!derivedFromMipCde) {
+        p.deleteDirectorySync("tests/sql/mip_with-research");
+      }
+      return p;
+    }
   );
 }
 
@@ -193,6 +207,24 @@ function dataLicense(dataLicense: string, project: Project): Promise<Project> {
     await file
       .replaceAll("DATA_LICENSE_BADGE", licenseBadge)
       .then(f => f.replaceAll("DATA_LICENSE", license));
+  });
+}
+
+function shipData(
+  includesData: boolean,
+  project: Project,
+): Promise<Project> {
+
+  return doWithFiles(project, "**/*.*", async file => {
+    await file.getContent().then(content => {
+      if (includesData) {
+        content = content.replace(/IFDATA:/, "").replace(/^IFNODATA:.*$/, "")
+      } else {
+        content = content.replace(/IFNODATA:/, "").replace(/^IFDATA:.*$/, "")       
+      }
+      file.setContent(content);
+    });
+    return project;
   });
 }
 

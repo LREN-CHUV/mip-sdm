@@ -11,6 +11,10 @@ export const TransformMetaSeedToCustomProject: CodeTransform<
   MetaDbSetupProjectCreationParameters
 > = async (p, ctx, params) => {
   return chainEditors(
+    project => doWithFiles(project, "README.md", async file => {
+      await project.deleteFile(file.path);
+      return project;
+    }),
     curry3(renameDataset)(params.datasetCode, params.datasetLabel),
     curry(mipCdeOrGeneric)(params.derivedFromMipCde.toLowerCase() == "yes"),
   )(p, ctx.context, params);
