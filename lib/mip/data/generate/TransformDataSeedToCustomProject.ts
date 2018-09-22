@@ -40,7 +40,7 @@ function renameDataset(
       .then(f => f.replaceAll("CUSTOM", datasetCode))
       .then(f => {
         if (f.path.indexOf("CUSTOM") >= 0) {
-          f.setPath(f.path.replace("CUSTOM", datasetCode));
+          project.moveFile(f.path, f.path.replace("CUSTOM", datasetCode));
         }
       });
     project.deleteDirectorySync("tests/sql/CUSTOM");
@@ -55,14 +55,12 @@ function mipCdeOrGeneric(
     if (derivedFromMipCde) {
       return project.deleteFile(f.path);
     } else {
-      await f.rename(f.name.replace("generic_", ""));
-      return project;
+      return project.moveFile(f.path, f.path.replace("generic_", ""));
     }
   }).then(p =>
     doWithFiles(p, "**/mip_*.*", async f => {
       if (derivedFromMipCde) {
-        await f.rename(f.name.replace("mip_", ""));
-        return project;
+        return project.moveFile(f.path, f.path.replace("mip_", ""));
       } else {
         return project.deleteFile(f.path);
       }
@@ -72,15 +70,13 @@ function mipCdeOrGeneric(
       if (derivedFromMipCde) {
         return project.deleteFile(f.path);
       } else {
-        await f.rename(f.name.replace("generic_", ""));
-        return project;
+        return project.moveFile(f.path, f.path.replace("generic_", ""));
       }
     }),
   ).then(p =>
     doWithFiles(p, "mip_*", async f => {
       if (derivedFromMipCde) {
-        await f.rename(f.name.replace("mip_", ""));
-        return project;
+        return project.moveFile(f.path, f.path.replace("mip_", ""));
       } else {
         return project.deleteFile(f.path);
       }
@@ -90,15 +86,13 @@ function mipCdeOrGeneric(
       if (derivedFromMipCde) {
         return project.deleteFile(f.path);
       } else {
-        await f.setPath(f.path.replace("generic_", ""));
-        return project;
+        return project.moveFile(f.path, f.path.replace("generic_", ""));
       }
     }),
   ).then(p =>
     doWithFiles(p, "**/mip_*/*", async f => {
       if (derivedFromMipCde) {
-        await f.setPath(f.path.replace("mip_", ""));
-        return project;
+        return project.moveFile(f.path, f.path.replace("mip_", ""));
       } else {
         return project.deleteFile(f.path);
       }
