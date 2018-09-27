@@ -2,7 +2,7 @@
   "name": "mip-sdm",
   "version": "0.1.0",
   "description": "my new project",
-  "author": "ludo",
+  "author": "Ludovic Claude",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -21,14 +21,14 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "dependencies": {
-    "@atomist/automation-client": "1.0.0-M.4",
-    "@atomist/sdm": "1.0.0-M.4",
-    "@atomist/sdm-core": "1.0.0-M.4",
-    "@atomist/sdm-pack-sloc": "^1.0.0-M.4",
+    "@atomist/automation-client": "1.0.0-M.5",
+    "@atomist/sdm": "1.0.0-M.5",
+    "@atomist/sdm-core": "1.0.0-M.5",
+    "@atomist/sdm-pack-sloc": "^1.0.0-M.5",
     "@typed/curry": "^1.0.1"
   },
   "devDependencies": {
-    "@atomist/sdm-local": "1.0.0-M.4",
+    "@atomist/sdm-local": "1.0.0-M.5",
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.10.1",
     "@types/power-assert": "^1.5.0",

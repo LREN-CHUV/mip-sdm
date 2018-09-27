@@ -25,12 +25,12 @@ import {
 import {
   createSoftwareDeliveryMachine,
   summarizeGoalsInGitHubStatus,
+  tagRepo,
 } from "@atomist/sdm-core";
-//import { SlocSupport } from "@atomist/sdm-pack-sloc/lib/sloc";
-import { buildAwareCodeTransforms } from "@atomist/sdm/lib/pack/build-aware-transform";
+import { mipTagger } from "../mip/classify/mipTagger";
 import {
   DataDbSetupProjectCreationParameterDefinitions,
-  DataDbSetupProjectCreationParameters,
+  DataDbSetupProjectCreationParameters
 } from "../mip/data/generate/DataDbSetupProjectCreationParameters";
 import { TransformDataSeedToCustomProject } from "../mip/data/generate/TransformDataSeedToCustomProject";
 import { UpgradeDataDbSetupRegistration } from "../mip/data/transform/upgradeToDataDbSetup2_4";
@@ -39,18 +39,15 @@ import {
   MetaDbSetupProjectCreationParameters
 } from "../mip/meta/generate/MetaDbSetupProjectCreationParameters";
 import { TransformMetaSeedToCustomProject } from "../mip/meta/generate/TransformMetaSeedToCustomProject";
-import { ProjectBuilder } from "../mip/project-scripts/build/ProjectBuilder";
-import {
-  AddAtomistWebhookToCircleCiRegistration
-} from "../transform/addCircleCiToAtomistWebhook";
-import { BuildGoals, BaseGoals, registerBuilder } from "./goals";
-import { HasCaptainBuildScriptFile } from "../mip/project-scripts/pushTests";
 import { CaptainLogInterpreter } from "../mip/project-scripts/build/buildLogInterpreter";
+import { ProjectBuilder } from "../mip/project-scripts/build/ProjectBuilder";
+import { HasCaptainBuildScriptFile } from "../mip/project-scripts/pushTests";
+import { AddAtomistWebhookToCircleCiRegistration } from "../transform/addCircleCiToAtomistWebhook";
+import { BaseGoals, BuildGoals, registerBuilder } from "./goals";
 
 export function machine(
   configuration: SoftwareDeliveryMachineConfiguration,
 ): SoftwareDeliveryMachine {
-
   const sdm = createSoftwareDeliveryMachine(
     {
       name: "MIP Software Delivery Machine",
@@ -67,13 +64,12 @@ export function machine(
     builder: new ProjectBuilder(sdm),
     logInterpreter: CaptainLogInterpreter,
   }),
-
-  sdm.addGoalContributions(
-    goalContributors(
-      onAnyPush().setGoals(BaseGoals),
-      // whenPushSatisfies(anySatisfied(IsMaven)).setGoals(BuildGoals),
-    ),
-  );
+    sdm.addGoalContributions(
+      goalContributors(
+        onAnyPush().setGoals(BaseGoals),
+        // whenPushSatisfies(anySatisfied(IsMaven)).setGoals(BuildGoals),
+      ),
+    );
 
   sdm.addGeneratorCommand<MetaDbSetupProjectCreationParameters>({
     name: "CreateMetaDbSetup",
@@ -98,15 +94,17 @@ export function machine(
   sdm.addCodeTransformCommand(AddAtomistWebhookToCircleCiRegistration);
   sdm.addCodeTransformCommand(UpgradeDataDbSetupRegistration);
 
+  sdm.addFirstPushListener(tagRepo(mipTagger));
+
   sdm.addExtensionPacks(
-    buildAwareCodeTransforms({
-      issueRouter: {
-        raiseIssue: async () => {
-          /* intentionally left empty */
-        },
-      },
-    }),
-    //SlocSupport,
+    //buildAwareCodeTransforms({
+    //  issueRouter: {
+    //    raiseIssue: async () => {
+    //      /* intentionally left empty */
+    //    },
+    //  },
+    //}),
+    // SlocSupport,
   );
 
   summarizeGoalsInGitHubStatus(sdm);
