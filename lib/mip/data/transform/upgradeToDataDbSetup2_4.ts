@@ -1,4 +1,3 @@
-//import { Microgrammar } from "@atomist/microgrammar";
 import {
   CodeTransform,
   CodeTransformRegistration,
@@ -6,7 +5,7 @@ import {
   EditMode,
   logger,
 } from "@atomist/sdm";
-//import { fromDockerImageGrammar } from "../../../docker/DockerBuildFile";
+import { updateParentImage, dockerImage } from "../../../docker/DockerBuildFile";
 
 export const UpgradeToDataDbSetup2_4Transform: CodeTransform = async project => {
   doWithFiles(
@@ -102,23 +101,6 @@ function removeDeprecatedBuildStages(text: string): string {
   }
 
   return lines
-    .map(l => {
-      /*
-      const parentImage = fromDockerImageGrammar.firstMatch(l);
-      if (parentImage) {
-        const updater = Microgrammar.updatableMatch(parentImage, l);
-        if (
-          parentImage.parentImage.registry == "hbpmip" &&
-          parentImage.parentImage.name == "data-db-setup"
-        ) {
-          logger.info("Update parent image to hbpmip/data-db-setup:2.4.0");
-          updater.parentImage.version = "2.4.0";
-        }
-        return updater.newContent();
-      } else { return l; }
-      */
-      return l.replace(/hbpmip\/data-db-setup:\d\.\d\.\d/, "hbpmip/data-db-setup:2.4.0")
-        .replace(/hbpmip\/mip-cde-data-db-setup:\d\.\d\.\d/, "hbpmip/mip-cde-data-db-setup:1.3.0");
-    })
+    .map(l => updateParentImage(l, dockerImage("hbpmip", "data-db-setup", "2.4.0")))
     .join("\n");
 }
