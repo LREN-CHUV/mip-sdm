@@ -16,6 +16,8 @@ export const versionedDockerImageRefGrammar = Microgrammar.fromString<
   registry: REGISTRY_PATTERN,
   name: NAME_PATTERN,
   version: VERSION_PATTERN,
+  $consumeWhiteSpaceBetweenTokens: false,
+  $skipGaps: false,
 });
 
 /**
@@ -27,6 +29,8 @@ export const unversionedDockerImageRefGrammar = Microgrammar.fromString<
 >("${registry}/${name}", {
   registry: REGISTRY_PATTERN,
   name: NAME_PATTERN,
+  $consumeWhiteSpaceBetweenTokens: false,
+  $skipGaps: false,
 });
 
 /**
@@ -38,6 +42,7 @@ export const fromVersionedDockerImageGrammar = Microgrammar.fromDefinitions<{
 }>({
   _from: "FROM",
   parentImage: versionedDockerImageRefGrammar,
+  $skipGaps: false,
 });
 
 /**
@@ -49,6 +54,7 @@ export const fromUnversionedDockerImageGrammar = Microgrammar.fromDefinitions<{
 }>({
   _from: "FROM",
   parentImage: unversionedDockerImageRefGrammar,
+  $skipGaps: false,
 });
 
 export interface DockerImage {
@@ -79,7 +85,7 @@ export function updateParentImage(
     const updater = Microgrammar.updatableMatch(match, line);
     if (
       match.parentImage.registry == parentImage.registry &&
-      match.parentImage.name == match.parentImage.name
+      match.parentImage.name == parentImage.name
     ) {
       const version = clean(match.parentImage.version);
       if (version && lt(version, newVersion)) {

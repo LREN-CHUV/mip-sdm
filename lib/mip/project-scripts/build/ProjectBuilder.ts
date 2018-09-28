@@ -1,4 +1,4 @@
-import { ChildProcessResult, spawnAndWatch } from "@atomist/automation-client";
+import { ChildProcessResult, spawnAndWatch, SuccessIsReturn0ErrorFinder } from "@atomist/automation-client";
 import {
   AddressChannels,
   AppInfo,
@@ -79,5 +79,9 @@ export async function executeBuild(
       cwd: p.baseDir,
     },
     progressLog,
+    {
+      stripAnsi: true,
+      errorFinder: SuccessIsReturn0ErrorFinder,
+    }
   );
 }
