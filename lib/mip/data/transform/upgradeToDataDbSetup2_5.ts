@@ -3,6 +3,7 @@ import {
   logger,
   spawnAndWatch,
   SuccessIsReturn0ErrorFinder,
+  execIn,
 } from "@atomist/automation-client";
 import { CodeTransform, doWithFiles, LoggingProgressLog } from "@atomist/sdm";
 import {
@@ -17,7 +18,7 @@ export const UpgradeToDataDbSetup2_5Transform: CodeTransform = async (
 ) => {
   await project.deleteDirectory("config");
 
-  doWithFiles(project, "sql/*.csv", async file => {
+  await doWithFiles(project, "sql/*.csv", async file => {
     await file.setPath("data/" + file.name);
   })
     .then(async project => {
@@ -29,7 +30,8 @@ export const UpgradeToDataDbSetup2_5Transform: CodeTransform = async (
       return project;
     })
     .then(async project => {
-      if (!await project.hasFile("data/datapackage.json")) {
+      const dataPackageFileName = "data/datapackage.json";
+      if (!await project.hasFile(dataPackageFileName)) {
         const localProject = project as LocalProject;
         const progressLog = new LoggingProgressLog("Generate datapackage.json");
         const csvFiles: string[] = [];
@@ -61,7 +63,7 @@ export const UpgradeToDataDbSetup2_5Transform: CodeTransform = async (
           return undefined;
         }
 
-        const dataPackageFile = await project.getFile("data/datapackage.json");
+        const dataPackageFile = await project.getFile(dataPackageFileName);
         const content = await dataPackageFile.getContent();
 
         interface Schema {
@@ -91,17 +93,18 @@ export const UpgradeToDataDbSetup2_5Transform: CodeTransform = async (
           }
         });
 
-        await project.deleteFile("data/datapackage.json");
-        await project.addFile("data/datapackage.json", JSON.stringify(json));
+        await project.add(dataPackageFile);
+        await dataPackageFile.setContent(JSON.stringify(json));
+        await execIn(localProject.baseDir, "git", ["add", dataPackageFileName]);
 
         await executePreCommitOnProject(localProject, progressLog);
 
         await sdmc.addressChannels(
-          `Generated datapackage.json for ${project.name}:\n${JSON.stringify(json)}`,
+          `Generated datapackage.json for ${project.name}:\n${await dataPackageFile.getContent()}`,
         );
 
-        return project;
       }
+      return project;
     });
 };
 
