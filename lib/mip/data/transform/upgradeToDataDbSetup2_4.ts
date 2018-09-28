@@ -1,8 +1,6 @@
 import {
   CodeTransform,
-  CodeTransformRegistration,
   doWithFiles,
-  EditMode,
   logger,
 } from "@atomist/sdm";
 import { updateParentImage, dockerImage } from "../../../docker/DockerBuildFile";
@@ -23,25 +21,6 @@ export const UpgradeToDataDbSetup2_4Transform: CodeTransform = async project => 
     return project;
   });
 };
-
-export const UpgradeDataDbSetupRegistration: CodeTransformRegistration = {
-  name: "UpgradeDataDbSetup",
-  description: "Upgrade data db setup",
-  intent: "upgrade data db setup",
-  transform: UpgradeToDataDbSetup2_4Transform,
-  transformPresentation: ci => {
-    return new MasterCommit();
-  },
-};
-class MasterCommit implements EditMode {
-  get message(): string {
-    return "Upgrade data db setup to version 2.4";
-  }
-
-  get branch(): string {
-    return "master";
-  }
-}
 
 function removeDeprecatedBuildStages(text: string): string {
   const lines = text.split("\n");

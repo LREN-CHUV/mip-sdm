@@ -8,7 +8,8 @@ import {
   ProgressLog,
   ProjectOperationCredentials,
   RemoteRepoRef,
-  SoftwareDeliveryMachine
+  SoftwareDeliveryMachine,
+  SoftwareDeliveryMachineConfiguration,
 } from "@atomist/sdm";
 import { LocalBuilder, LocalBuildInProgress } from "@atomist/sdm-core";
 import { BuildScriptFile } from "../wellKnowFiles";
@@ -35,8 +36,9 @@ export class ProjectBuilder extends LocalBuilder implements LogInterpretation {
     atomistTeam: string,
     log: ProgressLog,
     addressChannels: AddressChannels,
+    configuration: SoftwareDeliveryMachineConfiguration,
   ): Promise<LocalBuildInProgress> {
-    return this.sdm.configuration.sdm.projectLoader.doWithProject(
+    return configuration.sdm.projectLoader.doWithProject(
       { credentials, id, readOnly: true },
       async p => {
         const buildResult = executeBuild(p, log, this.args);
@@ -48,7 +50,6 @@ export class ProjectBuilder extends LocalBuilder implements LogInterpretation {
 }
 
 class UpdatingBuild implements LocalBuildInProgress {
-
   public deploymentUnitFile: string;
 
   constructor(

@@ -30,10 +30,10 @@ import {
 import { mipTagger } from "../mip/classify/mipTagger";
 import {
   DataDbSetupProjectCreationParameterDefinitions,
-  DataDbSetupProjectCreationParameters
+  DataDbSetupProjectCreationParameters,
 } from "../mip/data/generate/DataDbSetupProjectCreationParameters";
 import { TransformDataSeedToCustomProject } from "../mip/data/generate/TransformDataSeedToCustomProject";
-import { UpgradeDataDbSetupRegistration } from "../mip/data/transform/upgradeToDataDbSetup2_4";
+import { UpgradeDataDbSetupRegistration } from "../mip/data/transform/upgradeDataDbSetup";
 import {
   MetaDbSetupProjectCreationParameterDefinitions,
   MetaDbSetupProjectCreationParameters
@@ -43,7 +43,7 @@ import { CaptainLogInterpreter } from "../mip/project-scripts/build/buildLogInte
 import { ProjectBuilder } from "../mip/project-scripts/build/ProjectBuilder";
 import { HasCaptainBuildScriptFile } from "../mip/project-scripts/pushTests";
 import { AddAtomistWebhookToCircleCiRegistration } from "../transform/addCircleCiToAtomistWebhook";
-import { BaseGoals, BuildGoals, registerBuilder } from "./goals";
+import { BaseGoals, BuildGoal, BuildGoals } from "./goals";
 
 export function machine(
   configuration: SoftwareDeliveryMachineConfiguration,
@@ -58,18 +58,19 @@ export function machine(
       .setGoals(BuildGoals),
   );
 
-  registerBuilder({
+  BuildGoal.with({
     name: "Build script",
     pushTest: HasCaptainBuildScriptFile,
     builder: new ProjectBuilder(sdm),
     logInterpreter: CaptainLogInterpreter,
-  }),
-    sdm.addGoalContributions(
-      goalContributors(
-        onAnyPush().setGoals(BaseGoals),
-        // whenPushSatisfies(anySatisfied(IsMaven)).setGoals(BuildGoals),
-      ),
-    );
+  });
+
+  sdm.addGoalContributions(
+    goalContributors(
+      onAnyPush().setGoals(BaseGoals),
+      // whenPushSatisfies(anySatisfied(IsMaven)).setGoals(BuildGoals),
+    ),
+  );
 
   sdm.addGeneratorCommand<MetaDbSetupProjectCreationParameters>({
     name: "CreateMetaDbSetup",
@@ -96,16 +97,17 @@ export function machine(
 
   sdm.addFirstPushListener(tagRepo(mipTagger));
 
-  sdm.addExtensionPacks(
-    //buildAwareCodeTransforms({
+  sdm
+    .addExtensionPacks
+    // buildAwareCodeTransforms({
     //  issueRouter: {
     //    raiseIssue: async () => {
     //      /* intentionally left empty */
     //    },
     //  },
-    //}),
+    // }),
     // SlocSupport,
-  );
+    ();
 
   summarizeGoalsInGitHubStatus(sdm);
 
