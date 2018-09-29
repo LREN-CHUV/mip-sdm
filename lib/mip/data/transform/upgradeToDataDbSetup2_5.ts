@@ -139,7 +139,7 @@ function updateDockerBuildFile(text: string, csvFiles: string[]): string {
     lines.splice(start, end - start);
   }
 
-  const qcStage = `# Build stage for quality control
+  const qcStage1 = `# Build stage for quality control
 FROM python:3.6.1-alpine as data-qc-env
 
 RUN apk add --no-cache python3-dev build-base
@@ -149,9 +149,13 @@ COPY data/ data/
 WORKDIR /data
 
 # Produce a validation report, plus a readable report if there is an error
-RUN goodtables validate -o datapackage.checks --json datapackage.json || goodtables validate datapackage.json
+`
+
+  const qcStage2 = `RUN goodtables validate -o datapackage.checks --json datapackage.json || goodtables validate datapackage.json
+RUN test $(grep -c -v "loading error" datapackage.checks) -eq 0
 
 `
+
   const csvStats = csvFiles.map(f => `RUN csvstat ${f} | tee ${f.replace(".csv", ".stats")}`).join("\n");
 
   const updatedLines = lines
@@ -170,7 +174,14 @@ RUN goodtables validate -o datapackage.checks --json datapackage.json || goodtab
     })
     .join("\n");
 
-  return `${qcStage}\n${csvStats}\n${updatedLines}`;
+  if (text.indexOf("hbpmip/mip-cde-data-db-setup") > 0) {
+    const recoverSchemas = `FROM hbpmip/mip-cde-data-db-setup:1.4.0 as parent-image`
+    const copySchemas = "COPY --from=parent-image /data/*.json /data/"
+
+    return `${recoverSchemas}\n${qcStage1}\n${copySchemas}\n${qcStage2}\n${csvStats}\n\n${updatedLines}`;
+  } else {
+    return `${qcStage1}\n${qcStage2}\n${csvStats}\n\n${updatedLines}`;
+  }
 }
 
 async function csvFilesInDataDir(project: Project): Promise<string[]> {
