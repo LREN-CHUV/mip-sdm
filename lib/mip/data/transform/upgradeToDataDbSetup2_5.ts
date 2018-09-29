@@ -4,6 +4,7 @@ import {
   spawnAndWatch,
   SuccessIsReturn0ErrorFinder,
   execIn,
+  Project,
 } from "@atomist/automation-client";
 import { CodeTransform, doWithFiles, LoggingProgressLog } from "@atomist/sdm";
 import {
@@ -23,8 +24,9 @@ export const UpgradeToDataDbSetup2_5Transform: CodeTransform = async (
   })
     .then(async project => {
       await project.findFile("Dockerfile").then(async file => {
-        await file.getContent().then(content => {
-          file.setContent(updateDockerBuildFile(content));
+        await file.getContent().then(async content => {
+          const csvFiles = await csvFilesInDataDir(project);
+          file.setContent(updateDockerBuildFile(content, csvFiles));
         });
       });
       return project;
@@ -34,11 +36,7 @@ export const UpgradeToDataDbSetup2_5Transform: CodeTransform = async (
       if (!await project.hasFile(dataPackageFileName)) {
         const localProject = project as LocalProject;
         const progressLog = new LoggingProgressLog("Generate datapackage.json");
-        const csvFiles: string[] = [];
-
-        await doWithFiles(project, "data/*.csv", file => {
-          csvFiles.push(file.name);
-        });
+        const csvFiles = await csvFilesInDataDir(project);
 
         const csvFilesList = csvFiles.join(" ");
         const command = `goodtables init -o datapackage.json ${csvFilesList}`;
@@ -108,10 +106,55 @@ export const UpgradeToDataDbSetup2_5Transform: CodeTransform = async (
     });
 };
 
-function updateDockerBuildFile(text: string): string {
+function updateDockerBuildFile(text: string, csvFiles: string[]): string {
   const lines = text.split("\n");
 
-  return lines
+  let start = lines.findIndex(l => {
+    return (
+      l.indexOf("FROM python") >= 0 &&
+      l.indexOf("as build-stats-env") > 0
+    );
+  });
+  let end = lines.findIndex(l => {
+    return (
+      l.indexOf("FROM hbpmip/") >= 0 &&
+      l.indexOf("data-db-setup") >= 0 &&
+      l.indexOf(" as ") < 0
+    );
+  });
+
+  if (start > 0) {
+    if (lines[start - 1].startsWith("#")) {
+      start = start - 1;
+    }
+  }
+
+  if (end > 0) {
+    if (lines[end - 1].startsWith("#")) {
+      end = end - 1;
+    }
+  }
+
+  if (start >= 0 && end > start) {
+    lines.splice(start, end - start);
+  }
+
+  const qcStage = `# Build stage for quality control
+FROM python:3.6.1-alpine as data-qc-env
+
+RUN apk add --no-cache python3-dev build-base
+RUN pip3 install --no-cache-dir goodtables csvkit==1.0.2
+
+COPY data/ data/
+WORKDIR /data
+
+# Produce a validation report, plus a readable report if there is an error
+RUN goodtables validate -o datapackage.checks --json datapackage.json || goodtables validate datapackage.json
+
+`
+  const csvStats = csvFiles.map(f => `RUN csvstat ${f} | tee ${f.replace(".csv", ".stats")}`).join("\n");
+
+  const updatedLines = lines
     .map(l => {
       l = updateParentImage(l, dockerImage("hbpmip", "data-db-setup", "2.5.5"));
       l = updateParentImage(
@@ -120,7 +163,25 @@ function updateDockerBuildFile(text: string): string {
       );
       l = l.replace("COPY sql/", "COPY data/");
       l = l.replace("COPY config/ /flyway/config/", "COPY data/ data/");
+      if (l.indexOf("COPY --from=build-stats-env") >= 0) {
+        l = "COPY --from=data-qc-env /data/{*.stats,*.checks} /data/";
+      }
       return l;
     })
     .join("\n");
+
+  return `${qcStage}\n${csvStats}\n${updatedLines}`;
+}
+
+async function csvFilesInDataDir(project: Project): Promise<string[]> {
+  const csvFiles: string[] = [];
+
+  await doWithFiles(project, "data/*.csv", file => {
+    csvFiles.push(file.name);
+  });
+
+  return new Promise<string[]>((resolve, reject) => {
+    resolve(csvFiles);
+  });
+
 }
