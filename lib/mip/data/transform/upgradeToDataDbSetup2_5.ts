@@ -164,7 +164,7 @@ RUN goodtables validate -o datapackage.checks --json datapackage.json || goodtab
       l = l.replace("COPY sql/", "COPY data/");
       l = l.replace("COPY config/ /flyway/config/", "COPY data/ data/");
       if (l.indexOf("COPY --from=build-stats-env") >= 0) {
-        l = "COPY --from=data-qc-env /data/{*.stats,*.checks} /data/";
+        l = "COPY --from=data-qc-env /data/*.stats /data/*.checks /data/";
       }
       return l;
     })
