@@ -152,7 +152,7 @@ WORKDIR /data
 `
 
   const qcStage2 = `RUN goodtables validate -o datapackage.checks --json datapackage.json || goodtables validate datapackage.json
-RUN test $(grep -c -v "loading error" datapackage.checks) -eq 0
+RUN test $(grep -c "loading error" datapackage.checks) -eq 0
 
 `
 
@@ -163,7 +163,7 @@ RUN test $(grep -c -v "loading error" datapackage.checks) -eq 0
       l = updateParentImage(l, dockerImage("hbpmip", "data-db-setup", "2.5.5"));
       l = updateParentImage(
         l,
-        dockerImage("hbpmip", "mip-cde-data-db-setup", "1.4.0"),
+        dockerImage("hbpmip", "mip-cde-data-db-setup", "1.4.1"),
       );
       l = l.replace("COPY sql/", "COPY data/");
       l = l.replace("COPY config/ /flyway/config/", "COPY data/ data/");
@@ -175,7 +175,7 @@ RUN test $(grep -c -v "loading error" datapackage.checks) -eq 0
     .join("\n");
 
   if (text.indexOf("hbpmip/mip-cde-data-db-setup") > 0) {
-    const recoverSchemas = `FROM hbpmip/mip-cde-data-db-setup:1.4.0 as parent-image`
+    const recoverSchemas = `FROM hbpmip/mip-cde-data-db-setup:1.4.1 as parent-image`
     const copySchemas = "COPY --from=parent-image /data/*.json /data/"
 
     return `${recoverSchemas}\n${qcStage1}\n${copySchemas}\n${qcStage2}\n${csvStats}\n\n${updatedLines}`;
