@@ -141,7 +141,7 @@ export const PreCommitTransform: CodeTransform = async (project, sdmc) => {
           if (
             !hasHook("check-added-large-files", hooks) &&
             isLocalProject(project) &&
-            hasJsonFiles(project as LocalProject)
+            hasCsvFiles(project as LocalProject)
           ) {
             hooks.push({
               id: "check-added-large-files",
