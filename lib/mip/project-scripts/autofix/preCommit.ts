@@ -14,7 +14,7 @@ import {
 } from "@atomist/sdm";
 import { updateYamlDocument } from "@atomist/yaml-updater";
 import { safeLoad } from "js-yaml";
-import { PreCommitConfig } from "../wellKnowFiles";
+import { BumpVersionConfig, PreCommitConfig } from "../wellKnowFiles";
 
 const PRECOMMIT_HOOKS_VERSION = "v1.4.0-1";
 
@@ -139,13 +139,51 @@ export const PreCommitTransform: CodeTransform = async (project, sdmc) => {
           }
 
           if (
+            !hasHook("check-added-large-files", hooks) &&
+            isLocalProject(project) &&
+            hasJsonFiles(project as LocalProject)
+          ) {
+            hooks.push({
+              id: "check-added-large-files",
+              exclude: ".*.csv",
+            });
+            changed = true;
+          }
+
+          if (
             hasHook("check-added-large-files", hooks) &&
             isLocalProject(project) &&
             hasCsvFiles(project as LocalProject)
           ) {
             const checkLargeFiles = getHook("check-added-large-files", hooks);
-            checkLargeFiles.exclude = ".*.csv";
+            if (!checkLargeFiles.exclude) {
+              checkLargeFiles.exclude = ".*.csv";
+              changed = true;
+            }
+          }
+
+          if (
+            !hasHook("end-of-file-fixer", hooks) &&
+            isLocalProject(project) &&
+            project.fileExistsSync(BumpVersionConfig)
+          ) {
+            hooks.push({
+              id: "end-of-file-fixer",
+              exclude: ".bumpversion.cfg",
+            });
             changed = true;
+          }
+
+          if (
+            hasHook("end-of-file-fixer", hooks) &&
+            isLocalProject(project) &&
+            project.fileExistsSync(BumpVersionConfig)
+          ) {
+            const eofFixer = getHook("end-of-file-fixer", hooks);
+            if (!eofFixer.exclude) {
+              eofFixer.exclude = ".bumpversion.cfg";
+              changed = true;
+            }
           }
         }
       });
@@ -156,9 +194,9 @@ export const PreCommitTransform: CodeTransform = async (project, sdmc) => {
           updateYamlDocument({ repos: config.repos }, content, {
             keepArrayIndent: false,
           })
-          .replace(/    rev:/g, "  rev:")
-          .replace(/    hooks:/g, "  hooks:")
-          .replace(/        exclude:/g, "      exclude:")
+            .replace(/    rev:/g, "  rev:")
+            .replace(/    hooks:/g, "  hooks:")
+            .replace(/        exclude:/g, "      exclude:")
             .replace(/        args:/g, "      args:"),
         );
       }

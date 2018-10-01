@@ -3,4 +3,4 @@ export const DockerFile = "Dockerfile";
 export const CaptainFile = "captain.yml";
 export const BuildScriptFile = "build.sh";
 export const PreCommitConfig = ".pre-commit-config.yaml";
-export const BumpVersionConfig = ".bumversion.cfg"
+export const BumpVersionConfig = ".bumpversion.cfg"
