@@ -15,35 +15,23 @@
  */
 
 import {
-  GitHubRepoRef,
-  goalContributors,
-  onAnyPush,
   SoftwareDeliveryMachine,
   SoftwareDeliveryMachineConfiguration,
   whenPushSatisfies,
+  DoNotSetAnyGoals,
+  not,
+  ToDefaultBranch,
 } from "@atomist/sdm";
 import {
   createSoftwareDeliveryMachine,
   summarizeGoalsInGitHubStatus,
-  tagRepo,
+  IsInLocalMode,
 } from "@atomist/sdm-core";
-import { mipTagger } from "../mip/classify/mipTagger";
-import {
-  DataDbSetupProjectCreationParameterDefinitions,
-  DataDbSetupProjectCreationParameters,
-} from "../mip/data/generate/DataDbSetupProjectCreationParameters";
-import { TransformDataSeedToCustomProject } from "../mip/data/generate/TransformDataSeedToCustomProject";
-import { UpgradeDataDbSetupRegistration } from "../mip/data/transform/upgradeDataDbSetup";
-import {
-  MetaDbSetupProjectCreationParameterDefinitions,
-  MetaDbSetupProjectCreationParameters
-} from "../mip/meta/generate/MetaDbSetupProjectCreationParameters";
-import { TransformMetaSeedToCustomProject } from "../mip/meta/generate/TransformMetaSeedToCustomProject";
-import { CaptainLogInterpreter } from "../mip/project-scripts/build/buildLogInterpreter";
-import { ProjectBuilder } from "../mip/project-scripts/build/ProjectBuilder";
 import { HasCaptainBuildScriptFile } from "../mip/project-scripts/pushTests";
-import { AddAtomistWebhookToCircleCiRegistration } from "../transform/addCircleCiToAtomistWebhook";
-import { BaseGoals, BuildGoal, BuildGoals } from "./goals";
+import { BuildGoals, LocalGoals, BuildReleaseGoals } from "./goals";
+import { addTeamPolicies } from "./teamPolicies";
+import { addCaptainSupport } from "./captainSupport";
+import { addMipSupport } from "./mipSupport";
 
 export function machine(
   configuration: SoftwareDeliveryMachineConfiguration,
@@ -53,50 +41,43 @@ export function machine(
       name: "MIP Software Delivery Machine",
       configuration,
     },
+
+    whenPushSatisfies(not(HasCaptainBuildScriptFile))
+      .itMeans("Non Docker-built repository")
+      .setGoals(DoNotSetAnyGoals),
+
+    whenPushSatisfies(HasCaptainBuildScriptFile, IsInLocalMode)
+      .itMeans("Docker-built repository in local mode")
+      .setGoals(LocalGoals),
+
+    // TODO: ignore projects in HBPMedical team that are already managed by another team
+    // whenPushSatisfies(not(isSdmEnabled(configuration.name)), isTeam("T095SFFBK"))
+    //      .itMeans("Node repository in atomist team that we are already building in atomist-community")
+    //      .setGoals(DoNotSetAnyGoals),
+
+    // TODO: check for immaterial changes
+    // whenPushSatisfies(allSatisfied(IsNode, not(IsMaven)), not(MaterialChangeToNodeRepo))
+    // .itMeans("No Material Change")
+    // .setGoals(Immaterial),
+
+    whenPushSatisfies(HasCaptainBuildScriptFile, ToDefaultBranch)
+      .itMeans("Docker Release Build")
+      .setGoals(BuildReleaseGoals),
+
+    whenPushSatisfies(HasCaptainBuildScriptFile)
+      .itMeans("Docker Build")
+      .setGoals(BuildGoals),
+
+
     whenPushSatisfies(HasCaptainBuildScriptFile)
       .itMeans("Build")
       .setGoals(BuildGoals),
   );
 
-  BuildGoal.with({
-    name: "Build script",
-    pushTest: HasCaptainBuildScriptFile,
-    builder: new ProjectBuilder(sdm),
-    logInterpreter: CaptainLogInterpreter,
-  });
-
-  sdm.addGoalContributions(
-    goalContributors(
-      onAnyPush().setGoals(BaseGoals),
-      // whenPushSatisfies(anySatisfied(IsMaven)).setGoals(BuildGoals),
-    ),
-  );
-
-  sdm.addGeneratorCommand<MetaDbSetupProjectCreationParameters>({
-    name: "CreateMetaDbSetup",
-    intent: "create meta db setup",
-    description:
-      "Create a new database setup project that will insert into a database the metadata describing the list of variables and their taxonomy",
-    parameters: MetaDbSetupProjectCreationParameterDefinitions,
-    startingPoint: new GitHubRepoRef("lren-chuv", "mip-meta-db-setup-seed"),
-    transform: [TransformMetaSeedToCustomProject],
-  });
-
-  sdm.addGeneratorCommand<DataDbSetupProjectCreationParameters>({
-    name: "CreateDataDbSetup",
-    intent: "create data db setup",
-    description:
-      "Create a new database setup project that will insert into a database the features of a dataset",
-    parameters: DataDbSetupProjectCreationParameterDefinitions,
-    startingPoint: new GitHubRepoRef("lren-chuv", "mip-data-db-setup-seed"),
-    transform: [TransformDataSeedToCustomProject],
-  });
-
-  sdm.addCodeTransformCommand(AddAtomistWebhookToCircleCiRegistration);
-  sdm.addCodeTransformCommand(UpgradeDataDbSetupRegistration);
-
-  sdm.addFirstPushListener(tagRepo(mipTagger));
-
+  addCaptainSupport(sdm);
+  addMipSupport(sdm);
+  addTeamPolicies(sdm);
+    
   sdm
     .addExtensionPacks
     // buildAwareCodeTransforms({
