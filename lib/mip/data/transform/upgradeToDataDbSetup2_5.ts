@@ -156,6 +156,7 @@ RUN test $(grep -c "loading error" datapackage.checks) -eq 0
 `
 
   const csvStats = csvFiles.map(f => `RUN csvstat ${f} | tee ${f.replace(".csv", ".stats")}`).join("\n");
+  const isDerivedFromMipCde = text.indexOf("hbpmip/mip-cde-data-db-setup") > 0;
 
   const updatedLines = lines
     .map(l => {
@@ -171,11 +172,21 @@ RUN test $(grep -c "loading error" datapackage.checks) -eq 0
       if (l.indexOf("COPY --from=build-stats-env") >= 0) {
         l = "COPY --from=data-qc-env /data/*.stats /data/*.checks /data/";
       }
+      if (isDerivedFromMipCde && l.indexOf("ENV IMAGE=") >= 0) {
+        l = l.replace(" \\", "");
+      }
+      if (l.indexOf("DATASETS=") >= 0) {
+        if (isDerivedFromMipCde) {
+          l = "";
+        } else {
+          l = "    DATAPACKAGE=/data/datapackage.json";
+        }
+      }
       return l;
     })
     .join("\n");
 
-  if (text.indexOf("hbpmip/mip-cde-data-db-setup") > 0) {
+  if (isDerivedFromMipCde) {
     const recoverSchemas = `FROM hbpmip/mip-cde-data-db-setup:1.4.2 as parent-image`
     const copySchemas = "COPY --from=parent-image /data/*.json /data/"
 
