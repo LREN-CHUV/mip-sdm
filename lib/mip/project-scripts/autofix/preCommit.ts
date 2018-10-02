@@ -14,7 +14,8 @@ import {
 } from "@atomist/sdm";
 import { updateYamlDocument } from "@atomist/yaml-updater";
 import { safeLoad } from "js-yaml";
-import { BumpVersionConfig, PreCommitConfig } from "../wellKnowFiles";
+import { PreCommitConfig } from "../wellKnowFiles";
+import { BumpVersionConfig } from "../../../bumpversion/versionner";
 
 const PRECOMMIT_HOOKS_VERSION = "v1.4.0-1";
 

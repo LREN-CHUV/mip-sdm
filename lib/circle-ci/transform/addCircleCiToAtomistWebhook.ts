@@ -1,7 +1,6 @@
 import { doWithFiles } from "@atomist/automation-client";
 import { CodeTransformRegistration, CodeTransform, AutofixRegistration } from "@atomist/sdm";
-
-export const CircleCIConfigFile = ".circleci/config.yml";
+import { CircleCIConfigFile } from "../circleCiFiles";
 
 const ATOMIST_NOTIFY = `
 

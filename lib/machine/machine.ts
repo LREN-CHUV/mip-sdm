@@ -15,23 +15,23 @@
  */
 
 import {
+  DoNotSetAnyGoals,
+  not,
   SoftwareDeliveryMachine,
   SoftwareDeliveryMachineConfiguration,
   whenPushSatisfies,
-  DoNotSetAnyGoals,
-  not,
-  ToDefaultBranch,
 } from "@atomist/sdm";
 import {
   createSoftwareDeliveryMachine,
-  summarizeGoalsInGitHubStatus,
   IsInLocalMode,
+  summarizeGoalsInGitHubStatus,
 } from "@atomist/sdm-core";
 import { HasCaptainBuildScriptFile } from "../mip/project-scripts/pushTests";
-import { BuildGoals, LocalGoals, BuildReleaseGoals } from "./goals";
-import { addTeamPolicies } from "./teamPolicies";
 import { addCaptainSupport } from "./captainSupport";
+import { BuildGoals, CheckGoals, LocalGoals } from "./goals";
 import { addMipSupport } from "./mipSupport";
+import { addTeamPolicies } from "./teamPolicies";
+import { HasCircleCIFile } from "../circle-ci/pushtests/CircleCIPushTests";
 
 export function machine(
   configuration: SoftwareDeliveryMachineConfiguration,
@@ -60,14 +60,9 @@ export function machine(
     // .itMeans("No Material Change")
     // .setGoals(Immaterial),
 
-    whenPushSatisfies(HasCaptainBuildScriptFile, ToDefaultBranch)
-      .itMeans("Docker Release Build")
-      .setGoals(BuildReleaseGoals),
-
-    whenPushSatisfies(HasCaptainBuildScriptFile)
-      .itMeans("Docker Build")
-      .setGoals(BuildGoals),
-
+    whenPushSatisfies(HasCaptainBuildScriptFile, HasCircleCIFile)
+      .itMeans("Just Checking")
+      .setGoals(CheckGoals),
 
     whenPushSatisfies(HasCaptainBuildScriptFile)
       .itMeans("Build")
@@ -77,7 +72,7 @@ export function machine(
   addCaptainSupport(sdm);
   addMipSupport(sdm);
   addTeamPolicies(sdm);
-    
+
   sdm
     .addExtensionPacks
     // buildAwareCodeTransforms({
