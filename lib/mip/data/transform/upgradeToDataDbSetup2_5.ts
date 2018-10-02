@@ -164,7 +164,9 @@ RUN test $(grep -c "loading error" datapackage.checks) -eq 0
         l,
         dockerImage("hbpmip", "mip-cde-data-db-setup", "1.4.2"),
       );
-      l = l.replace("COPY sql/", "COPY data/");
+      if (l.indexOf(".sql") < 0) {
+        l = l.replace("COPY sql/", "COPY data/");
+      }
       l = l.replace("COPY config/ /flyway/config/", "COPY data/ /data/");
       if (l.indexOf("COPY --from=build-stats-env") >= 0) {
         l = "COPY --from=data-qc-env /data/*.stats /data/*.checks /data/";
