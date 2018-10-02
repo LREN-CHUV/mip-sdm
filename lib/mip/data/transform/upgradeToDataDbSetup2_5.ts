@@ -145,7 +145,7 @@ FROM python:3.6.1-alpine as data-qc-env
 RUN apk add --no-cache python3-dev build-base
 RUN pip3 install --no-cache-dir goodtables csvkit==1.0.2
 
-COPY data/ data/
+COPY data/ /data/
 WORKDIR /data
 
 # Produce a validation report, plus a readable report if there is an error
@@ -168,7 +168,7 @@ RUN test $(grep -c "loading error" datapackage.checks) -eq 0
       if (l.indexOf(".sql") < 0) {
         l = l.replace("COPY sql/", "COPY data/");
       }
-      l = l.replace("COPY config/ /flyway/config/", "COPY data/ /data/");
+      l = l.replace("COPY config/ /flyway/config/", "COPY data/* /data/");
       if (l.indexOf("COPY --from=build-stats-env") >= 0) {
         l = "COPY --from=data-qc-env /data/*.stats /data/*.checks /data/";
       }
