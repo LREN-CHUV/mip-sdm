@@ -10,7 +10,7 @@ export const BumpVersionConfig = ".bumpversion.cfg"
  * @param log
  * @constructor
  */
-export const BumpversionVersioner: ProjectVersioner = async (sdmGoal, p, log) => {
+export const BumpVersionVersioner: ProjectVersioner = async (sdmGoal, p, log) => {
     const version = ""; // await newVersion(sdmGoal, p);
     //await changeMavenVersion(version, p, log);
     return version;

@@ -32,6 +32,7 @@ import { BuildGoals, CheckGoals, LocalGoals } from "./goals";
 import { addMipSupport } from "./mipSupport";
 import { addTeamPolicies } from "./teamPolicies";
 import { HasCircleCIFile } from "../circle-ci/pushtests/CircleCIPushTests";
+import { addBumpVersionSupport } from "./bumpVersionSupport";
 
 export function machine(
   configuration: SoftwareDeliveryMachineConfiguration,
@@ -70,6 +71,7 @@ export function machine(
   );
 
   addCaptainSupport(sdm);
+  addBumpVersionSupport(sdm);
   addMipSupport(sdm);
   addTeamPolicies(sdm);
 
