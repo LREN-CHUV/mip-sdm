@@ -36,6 +36,22 @@ The project will use [Flyway Database migrations](flywaydb) to create the tables
 
 Upgrade a project derived from data db setup, and upgrade it to the latest version of data-db-setup or mip-cde-data-db-setup
 
+## Additional functionality
+
+In addition to commands executed from Slack or from the command line, Atomist continuously monitors Github code repositories and can perform automatically additional actions.
+
+### Autofixes
+
+The following autofixes are provided and applied on each commit on projects monitored by Atomist
+
+#### build.sh
+
+This build script is standardised when Atomist detects that captain is used to build the project.
+
+### .circleci/config.yml
+
+Add a webhook to notify Atomist on CircleCi builds
+
 ## Prerequisites
 
 See the [Atomist Developer documentation][atomist-dev] for
