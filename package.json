@@ -24,7 +24,7 @@
     "@atomist/automation-client": "1.0.0-M.5",
     "@atomist/sdm": "1.0.0-M.5",
     "@atomist/sdm-core": "1.0.0-M.5",
-    "@atomist/sdm-pack-sloc": "^1.0.0-M.5",
+    "@atomist/sdm-pack-sloc": "^1.0.0-RC.1",
     "@atomist/yaml-updater": "^1.0.0",
     "@typed/curry": "^1.0.1",
     "@types/js-yaml": "^3.11.2"
@@ -32,7 +32,7 @@
   "devDependencies": {
     "@atomist/sdm-local": "1.0.0-M.5",
     "@types/mocha": "^5.2.5",
-    "@types/node": "^10.10.1",
+    "@types/node": "^10.12.0",
     "@types/power-assert": "^1.5.0",
     "espower-typescript": "^9.0.1",
     "mocha": "^5.2.0",
