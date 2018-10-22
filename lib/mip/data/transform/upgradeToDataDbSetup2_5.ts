@@ -163,7 +163,7 @@ RUN test $(grep -c "loading error" datapackage.checks) -eq 0
       l = updateParentImage(l, dockerImage("hbpmip", "data-db-setup", "2.5.5"));
       l = updateParentImage(
         l,
-        dockerImage("hbpmip", "mip-cde-data-db-setup", "1.4.2"),
+        dockerImage("hbpmip", "mip-cde-data-db-setup", "1.4.3"),
       );
       if (l.indexOf(".sql") < 0) {
         l = l.replace("COPY sql/", "COPY data/");
@@ -187,7 +187,7 @@ RUN test $(grep -c "loading error" datapackage.checks) -eq 0
     .join("\n");
 
   if (isDerivedFromMipCde) {
-    const recoverSchemas = `FROM hbpmip/mip-cde-data-db-setup:1.4.2 as parent-image`
+    const recoverSchemas = `FROM hbpmip/mip-cde-data-db-setup:1.4.3 as parent-image`
     const copySchemas = "COPY --from=parent-image /data/*.json /data/"
 
     return `${recoverSchemas}\n\n${qcStage1}\n${copySchemas}\n${qcStage2}\n${csvStats}\n\n${updatedLines}`;
