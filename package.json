@@ -21,16 +21,16 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "dependencies": {
-    "@atomist/automation-client": "1.0.0-M.5",
-    "@atomist/sdm": "1.0.0-M.5",
-    "@atomist/sdm-core": "1.0.0-M.5",
+    "@atomist/automation-client": "1.0.0-RC.1",
+    "@atomist/sdm": "1.0.0-RC.1",
+    "@atomist/sdm-core": "1.0.0-RC.1",
     "@atomist/sdm-pack-sloc": "^1.0.0-RC.1",
     "@atomist/yaml-updater": "^1.0.0",
     "@typed/curry": "^1.0.1",
     "@types/js-yaml": "^3.11.2"
   },
   "devDependencies": {
-    "@atomist/sdm-local": "1.0.0-M.5",
+    "@atomist/sdm-local": "1.0.0-RC.1",
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.12.0",
     "@types/power-assert": "^1.5.0",
@@ -43,8 +43,8 @@
     "supervisor": "^0.12.0",
     "ts-node": "^7.0.0",
     "tslint": "^5.11.0",
-    "typedoc": "^0.11.1",
-    "typescript": "^2.9.2",
+    "typedoc": "^0.13.0",
+    "typescript": "^3.1.3",
     "typescript-formatter": "^7.2.2"
   },
   "directories": {
