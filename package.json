@@ -21,10 +21,10 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "dependencies": {
-    "@atomist/automation-client": "1.0.0-RC.2",
+    "@atomist/automation-client": "1.7.0",
     "@atomist/sdm": "1.0.0-RC.2",
     "@atomist/sdm-core": "1.0.0-RC.2",
-    "@atomist/sdm-pack-sloc": "^1.0.0-RC.2",
+    "@atomist/sdm-pack-sloc": "^1.0.1",
     "@atomist/yaml-updater": "^1.0.0",
     "@typed/curry": "^1.0.1",
     "@types/js-yaml": "^3.11.2"
