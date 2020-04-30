@@ -1,0 +1,18 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.14.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - '@atomist/sdm-pack-sloc > lodash':
+        patched: '2020-04-30T23:48:01.402Z'
+    - '@atomist/sdm-core > @octokit/rest > lodash':
+        patched: '2020-04-30T23:48:01.402Z'
+    - '@atomist/automation-client > inquirer > lodash':
+        patched: '2020-04-30T23:48:01.402Z'
+    - '@atomist/automation-client > node-cache > lodash':
+        patched: '2020-04-30T23:48:01.402Z'
+    - '@atomist/automation-client > winston > async > lodash':
+        patched: '2020-04-30T23:48:01.402Z'
+    - '@atomist/sdm-pack-sloc > sloc > async > lodash':
+        patched: '2020-04-30T23:48:01.402Z'
