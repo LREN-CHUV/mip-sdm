@@ -21,7 +21,7 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "dependencies": {
-    "@atomist/automation-client": "1.0.0-RC.2",
+    "@atomist/automation-client": "1.8.0",
     "@atomist/sdm": "1.0.0-RC.2",
     "@atomist/sdm-core": "1.0.0-RC.2",
     "@atomist/sdm-pack-sloc": "^1.0.0-RC.2",
